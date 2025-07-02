@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Plane, Clock, ArrowRight, Star, CheckCircle } from 'lucide-react';
+import { Plane, Clock, ArrowRight, Star, CheckCircle, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Flights = () => {
@@ -20,7 +20,14 @@ const Flights = () => {
       type: 'Non-stop',
       price: 8500,
       class: 'Economy',
-      popular: true
+      popular: true,
+      aiRecommended: true,
+      aiReasoning: {
+        price: 'Competitive for a non-stop morning flight',
+        duration: 'Only 2h 45m — shorter than average',
+        airline: 'Known for punctuality and comfort',
+        departure: 'Morning flight allows a full day at destination'
+      }
     },
     {
       id: 'airindia',
@@ -86,7 +93,7 @@ const Flights = () => {
               key={flight.id} 
               className={`card-elevated overflow-hidden hover-lift ${
                 selectedFlight === flight.id ? 'selection-ring' : ''
-              }`}
+              } ${flight.aiRecommended ? 'bg-gradient-to-r from-[#fff7eb] to-white border-l-4 border-primary' : ''}`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Popular/Cheapest Badge */}
@@ -105,7 +112,15 @@ const Flights = () => {
                         <span className="font-semibold text-white">{flight.code}</span>
                       </div>
                       <div className="ml-4">
-                        <h3 className="text-subheading">{flight.airline}</h3>
+                        <div className="flex-center">
+                          <h3 className="text-subheading">{flight.airline}</h3>
+                          {flight.aiRecommended && (
+                            <div className="ml-3 flex-center bg-gradient-to-r from-primary to-yellow-400 text-white px-3 py-1 rounded-full text-xs font-medium">
+                              <Zap size={12} className="mr-1" />
+                              AI Recommended
+                            </div>
+                          )}
+                        </div>
                         <p className="text-caption">{flight.class}</p>
                       </div>
                       {selectedFlight === flight.id && (
@@ -113,7 +128,7 @@ const Flights = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between max-w-md">
+                    <div className="flex items-center justify-between max-w-md mb-6">
                       <div className="text-center">
                         <div className="text-2xl font-semibold text-foreground">{flight.departure}</div>
                         <div className="text-caption">{flight.departureAirport}</div>
@@ -135,6 +150,22 @@ const Flights = () => {
                         <div className="text-caption">{flight.arrivalAirport}</div>
                       </div>
                     </div>
+
+                    {/* AI Recommendation Block */}
+                    {flight.aiRecommended && flight.aiReasoning && (
+                      <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 mb-4 border border-primary/20">
+                        <div className="flex-center mb-3">
+                          <Zap className="text-primary" size={16} />
+                          <h4 className="font-medium text-foreground ml-2">Why AI recommends this:</h4>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                          <div><strong>Price:</strong> {flight.aiReasoning.price}</div>
+                          <div><strong>Duration:</strong> {flight.aiReasoning.duration}</div>
+                          <div><strong>Airline:</strong> {flight.aiReasoning.airline}</div>
+                          <div><strong>Departure:</strong> {flight.aiReasoning.departure}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="text-right ml-8">

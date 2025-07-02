@@ -25,11 +25,13 @@ const Navbar = () => {
     <nav className="bg-card border-b border-border px-6 py-4 theme-transition sticky top-0 z-50 backdrop-blur-sm bg-card/95">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex-center hover-lift">
-          <img 
-            src="/lovable-uploads/c678bd3e-84b5-4687-81c9-15ca8e0959d9.png" 
-            alt="Indian Flag" 
-            className="w-10 h-10 rounded-full shadow-lg"
-          />
+          <div className="w-10 h-10 rounded-full shadow-lg overflow-hidden mr-3">
+            <img 
+              src="/lovable-uploads/8046535e-962b-4e80-b6c5-36482f2a916b.png" 
+              alt="Indian Flag" 
+              className="w-full h-full object-cover"
+            />
+          </div>
           <span className="text-2xl font-semibold tracking-tight relative">
             <span className="text-orange-500 drop-shadow-sm">Ra</span>
             <span className="text-gray-700 dark:text-gray-200 drop-shadow-sm">a</span>

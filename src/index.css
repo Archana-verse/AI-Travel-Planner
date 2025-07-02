@@ -192,6 +192,46 @@
   .hover-lift {
     @apply hover:-translate-y-1 transition-transform duration-200;
   }
+
+  /* Floating animation for background elements */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(2deg); }
+    66% { transform: translateY(5px) rotate(-2deg); }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Scale in animation for selected states */
+  @keyframes scale-in {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+
+  /* Fade in animation */
+  @keyframes fade-in {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+
+  /* Low opacity utilities */
+  .opacity-3 {
+    opacity: 0.03;
+  }
+
+  .opacity-5 {
+    opacity: 0.05;
+  }
 }
 
 /* Custom scrollbar */

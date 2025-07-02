@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Building, Star, Wifi, Car, Utensils, Waves, MapPin, CheckCircle } from 'lucide-react';
+import { Building, Star, Wifi, Car, Utensils, Waves, MapPin, CheckCircle, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Hotels = () => {
@@ -17,6 +17,13 @@ const Hotels = () => {
       price: 12500,
       image: '🏨',
       recommended: true,
+      aiRecommended: true,
+      aiReasoning: {
+        rating: '4.8/5 from over 1200 verified reviews',
+        location: 'Centrally located near top tourist spots',
+        amenities: 'Includes WiFi, pool, spa — perfect for family or business',
+        value: 'Competitive pricing for a premium 5-star property'
+      },
       amenities: [
         { icon: Wifi, label: 'Free WiFi' },
         { icon: Waves, label: 'Pool' },
@@ -88,7 +95,9 @@ const Hotels = () => {
           {hotels.map((hotel, index) => (
             <div 
               key={hotel.id} 
-              className="card-elevated overflow-hidden hover-lift"
+              className={`card-elevated overflow-hidden hover-lift ${
+                hotel.aiRecommended ? 'bg-gradient-to-r from-[#fffef2] to-white border-l-4 border-primary' : ''
+              }`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Recommended/Best Value Badge */}
@@ -109,7 +118,15 @@ const Hotels = () => {
                 <div className="flex-1 p-8">
                   <div className="flex flex-col lg:flex-row justify-between items-start mb-6">
                     <div className="flex-1">
-                      <h2 className="text-subheading mb-3">{hotel.name}</h2>
+                      <div className="flex-center mb-3">
+                        <h2 className="text-subheading">{hotel.name}</h2>
+                        {hotel.aiRecommended && (
+                          <div className="ml-3 flex-center bg-gradient-to-r from-primary to-yellow-400 text-white px-3 py-1 rounded-full text-xs font-medium">
+                            <Zap size={12} className="mr-1" />
+                            AI Recommended
+                          </div>
+                        )}
+                      </div>
                       <div className="flex-center mb-3">
                         <div className="flex-center">
                           <Star className="text-yellow-400 fill-current" size={18} />
@@ -125,7 +142,7 @@ const Hotels = () => {
                       <p className="text-body mb-6 leading-relaxed">{hotel.description}</p>
 
                       {/* Amenities */}
-                      <div>
+                      <div className="mb-6">
                         <h3 className="font-medium text-foreground mb-3">Amenities</h3>
                         <div className="flex flex-wrap gap-3">
                           {hotel.amenities.map((amenity, index) => {
@@ -139,6 +156,22 @@ const Hotels = () => {
                           })}
                         </div>
                       </div>
+
+                      {/* AI Recommendation Block */}
+                      {hotel.aiRecommended && hotel.aiReasoning && (
+                        <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-primary/20">
+                          <div className="flex-center mb-3">
+                            <Zap className="text-primary" size={16} />
+                            <h4 className="font-medium text-foreground ml-2">Why AI recommends this:</h4>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                            <div><strong>Rating:</strong> {hotel.aiReasoning.rating}</div>
+                            <div><strong>Location:</strong> {hotel.aiReasoning.location}</div>
+                            <div><strong>Amenities:</strong> {hotel.aiReasoning.amenities}</div>
+                            <div><strong>Value:</strong> {hotel.aiReasoning.value}</div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Price and Actions */}
