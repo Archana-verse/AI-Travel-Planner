@@ -30,8 +30,11 @@ const Navbar = () => {
             alt="Indian Flag" 
             className="w-10 h-10 rounded-full shadow-lg"
           />
-          <span className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-orange-500 via-white to-green-600 bg-clip-text text-transparent">
-            Raahi
+          <span className="text-2xl font-semibold tracking-tight relative">
+            <span className="text-orange-500 drop-shadow-sm">Ra</span>
+            <span className="text-gray-700 dark:text-gray-200 drop-shadow-sm">a</span>
+            <span className="text-gray-700 dark:text-gray-200 drop-shadow-sm">h</span>
+            <span className="text-green-600 drop-shadow-sm">i</span>
           </span>
         </Link>
         
