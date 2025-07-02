@@ -1,0 +1,155 @@
+
+:root {
+    --primary-color: #FF5722; /* Deep Orange */
+    --secondary-color: #4CAF50; /* Green */
+    --accent-color: #FFC107; /* Amber */
+    --background-color: #F5F5F5; /* Light Grey */
+    --surface-color: #FFFFFF; /* White */
+    --error-color: #F44336; /* Red */
+    --text-primary: #212121; /* Dark Grey */
+    --text-secondary: #757575; /* Medium Grey */
+    --text-disabled: #BDBDBD; /* Light Grey */
+}
+
+/* Typography */
+body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+    color: var(--primary-color);
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    color: var(--text-secondary);
+}
+
+/* Buttons */
+button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: var(--surface-color);
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Cards */
+.card {
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin: 16px 0;
+}
+
+/* Forms */
+input, textarea, select {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    color: var(--text-primary);
+    background-color: var(--surface-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    padding: 10px;
+    margin: 8px 0;
+    width: 100%;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+/* Links */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Navigation */
+nav {
+    background-color: var(--primary-color);
+    color: var(--surface-color);
+    padding: 10px 20px;
+}
+
+nav a {
+    color: var(--surface-color);
+    margin: 0 10px;
+}
+
+/* Footer */
+footer {
+    background-color: var(--text-disabled);
+    color: var(--surface-color);
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
