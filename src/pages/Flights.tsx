@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Plane, Clock, ArrowRight, Star, CheckCircle, Zap } from 'lucide-react';
+import { Plane } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import FlightCard from '../components/flights/FlightCard';
 
 const Flights = () => {
   const navigate = useNavigate();
@@ -89,111 +90,14 @@ const Flights = () => {
         {/* Flight List */}
         <div className="space-y-6 mb-8">
           {flights.map((flight, index) => (
-            <div 
-              key={flight.id} 
-              className={`card-elevated overflow-hidden hover-lift ${
-                selectedFlight === flight.id ? 'selection-ring' : ''
-              } ${flight.aiRecommended ? 'bg-gradient-to-r from-[#fff7eb] dark:from-[#2a1f0f] to-white dark:to-card border-l-4 border-primary' : ''}`}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              {/* Popular/Cheapest Badge */}
-              {(flight.popular || flight.cheapest) && (
-                <div className="bg-gradient-to-r from-primary to-yellow-400 text-white px-4 py-2 text-sm font-medium flex-center">
-                  <Star size={16} className="mr-1" />
-                  {flight.popular ? 'Most Popular' : 'Best Value'}
-                </div>
-              )}
-              
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex-center mb-4">
-                      <div className="w-12 h-12 gradient-saffron rounded-xl flex items-center justify-center shadow-md">
-                        <span className="font-semibold text-white">{flight.code}</span>
-                      </div>
-                      <div className="ml-4">
-                        <div className="flex-center">
-                          <h3 className="text-subheading text-foreground">{flight.airline}</h3>
-                          {flight.aiRecommended && (
-                            <div className="ml-3 flex-center bg-gradient-to-r from-primary to-yellow-400 text-white px-3 py-1 rounded-full text-xs font-medium">
-                              <Zap size={12} className="mr-1" />
-                              AI Recommended
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-muted-foreground">{flight.class}</p>
-                      </div>
-                      {selectedFlight === flight.id && (
-                        <CheckCircle className="text-success ml-4 animate-scale-in" size={24} />
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between max-w-md mb-6">
-                      <div className="text-center">
-                        <div className="text-2xl font-semibold text-foreground">{flight.departure}</div>
-                        <div className="text-muted-foreground">{flight.departureAirport}</div>
-                      </div>
-                      
-                      <div className="flex-1 flex items-center justify-center mx-8">
-                        <div className="text-center">
-                          <Plane className="text-primary mx-auto mb-1" size={20} />
-                          <div className="flex-center justify-center text-muted-foreground">
-                            <Clock size={14} />
-                            <span>{flight.duration}</span>
-                          </div>
-                          <div className="text-xs text-muted-foreground">{flight.type}</div>
-                        </div>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="text-2xl font-semibold text-foreground">{flight.arrival}</div>
-                        <div className="text-muted-foreground">{flight.arrivalAirport}</div>
-                      </div>
-                    </div>
-
-                    {/* AI Recommendation Block */}
-                    {flight.aiRecommended && flight.aiReasoning && (
-                      <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-xl p-4 mb-4 border border-primary/20">
-                        <div className="flex-center mb-3">
-                          <Zap className="text-primary" size={16} />
-                          <h4 className="font-medium text-foreground ml-2">Why AI recommends this:</h4>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
-                          <div><strong>Price:</strong> {flight.aiReasoning.price}</div>
-                          <div><strong>Duration:</strong> {flight.aiReasoning.duration}</div>
-                          <div><strong>Airline:</strong> {flight.aiReasoning.airline}</div>
-                          <div><strong>Departure:</strong> {flight.aiReasoning.departure}</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="text-right ml-8">
-                    <div className="text-3xl font-semibold text-primary mb-2">₹{flight.price.toLocaleString()}</div>
-                    <div className="text-muted-foreground mb-6">per person</div>
-                    
-                    <div className="space-y-3">
-                      <button
-                        onClick={() => handleFlightSelect(flight.id)}
-                        className={`w-full px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
-                          selectedFlight === flight.id
-                            ? 'bg-success text-white'
-                            : 'btn-primary'
-                        }`}
-                      >
-                        {selectedFlight === flight.id ? 'Selected' : 'Select Flight'}
-                      </button>
-                      <button
-                        onClick={() => handleBookNow(flight.id)}
-                        className="btn-secondary w-full"
-                      >
-                        Book Now
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <FlightCard
+              key={flight.id}
+              flight={flight}
+              selectedFlight={selectedFlight}
+              onFlightSelect={handleFlightSelect}
+              onBookNow={handleBookNow}
+              index={index}
+            />
           ))}
         </div>
 
