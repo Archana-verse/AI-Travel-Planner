@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-pattern">
       {/* Hero Section with Enhanced Background */}
-      <div className="relative bg-gradient-to-br from-[#fffdf9] via-[#fef9f3] to-[#fff5e6] overflow-hidden">
+      <div className="relative bg-gradient-to-br from-background via-background to-accent/30 overflow-hidden">
         {/* Background Decorative Elements */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-20 left-10 animate-float">
@@ -47,10 +47,10 @@ const Home = () => {
               </h1>
               <span className="text-4xl ml-3 animate-bounce" style={{ animationDuration: '2s' }}>🙏</span>
             </div>
-            <p className="text-xl text-muted-foreground mb-4 font-medium tracking-wide">
+            <p className="text-xl font-medium tracking-wide mb-4 text-foreground">
               यात्रायाः आरम्भः अत्र।
             </p>
-            <p className="text-body mb-12 max-w-2xl mx-auto text-lg">
+            <p className="text-lg mb-12 max-w-2xl mx-auto text-muted-foreground leading-relaxed">
               Begin your yatra with purpose — your journey, our intelligent guidance.
             </p>
             
@@ -88,8 +88,8 @@ const Home = () => {
       <div className="mx-6 mb-20">
         <div className="gradient-saffron py-20 px-8 rounded-3xl text-center text-white max-w-5xl mx-auto shadow-2xl">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-heading mb-6">Ready to explore incredible India? 🇮🇳</h2>
-            <p className="text-xl mb-8 opacity-90 leading-relaxed">
+            <h2 className="text-heading mb-6 text-white">Ready to explore incredible India? 🇮🇳</h2>
+            <p className="text-xl mb-8 opacity-90 leading-relaxed text-white">
               Join thousands of smart travelers who trust Raahi for their perfect journeys. Your next adventure is just one click away.
             </p>
             <Link

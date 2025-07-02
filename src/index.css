@@ -11,14 +11,14 @@
   :root {
     /* Sandstone background with warm undertones */
     --background: 36 12% 98%;
-    --foreground: 210 11% 18%;
+    --foreground: 20 14% 4%;
 
     /* Light beige cards with subtle warmth */
     --card: 36 20% 97%;
-    --card-foreground: 210 11% 18%;
+    --card-foreground: 20 14% 4%;
 
     --popover: 36 20% 97%;
-    --popover-foreground: 210 11% 18%;
+    --popover-foreground: 20 14% 4%;
 
     /* Deep Saffron primary with Indian warmth */
     --primary: 27 100% 47%;
@@ -26,13 +26,13 @@
 
     /* Warm secondary tones */
     --secondary: 36 30% 94%;
-    --secondary-foreground: 210 11% 18%;
+    --secondary-foreground: 20 14% 4%;
 
     --muted: 36 20% 95%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 25 5% 45%;
 
     --accent: 27 50% 92%;
-    --accent-foreground: 210 11% 18%;
+    --accent-foreground: 20 14% 4%;
 
     /* Error states with crimson */
     --destructive: 0 84% 60%;
@@ -50,38 +50,38 @@
 
     /* Sidebar with warm tones */
     --sidebar-background: 36 20% 97%;
-    --sidebar-foreground: 210 11% 18%;
+    --sidebar-foreground: 20 14% 4%;
     --sidebar-primary: 27 100% 47%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 36 30% 94%;
-    --sidebar-accent-foreground: 210 11% 18%;
+    --sidebar-accent-foreground: 20 14% 4%;
     --sidebar-border: 36 30% 88%;
     --sidebar-ring: 27 100% 47%;
   }
 
   .dark {
     /* Charcoal dark background */
-    --background: 220 13% 7%;
-    --foreground: 210 40% 95%;
+    --background: 220 13% 9%;
+    --foreground: 210 40% 98%;
 
-    --card: 220 13% 9%;
-    --card-foreground: 210 40% 95%;
+    --card: 220 13% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 220 13% 9%;
-    --popover-foreground: 210 40% 95%;
+    --popover: 220 13% 11%;
+    --popover-foreground: 210 40% 98%;
 
     /* Brighter saffron for dark mode */
     --primary: 27 100% 55%;
-    --primary-foreground: 220 13% 7%;
+    --primary-foreground: 220 13% 9%;
 
     --secondary: 220 13% 15%;
-    --secondary-foreground: 210 40% 95%;
+    --secondary-foreground: 210 40% 98%;
 
     --muted: 220 13% 13%;
-    --muted-foreground: 215 20% 65%;
+    --muted-foreground: 215 20% 70%;
 
     --accent: 220 13% 15%;
-    --accent-foreground: 210 40% 95%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
@@ -93,12 +93,12 @@
     --input: 220 13% 18%;
     --ring: 27 100% 55%;
 
-    --sidebar-background: 220 13% 9%;
-    --sidebar-foreground: 210 40% 95%;
+    --sidebar-background: 220 13% 11%;
+    --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 27 100% 55%;
-    --sidebar-primary-foreground: 220 13% 7%;
+    --sidebar-primary-foreground: 220 13% 9%;
     --sidebar-accent: 220 13% 15%;
-    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 220 13% 18%;
     --sidebar-ring: 27 100% 55%;
   }
@@ -157,7 +157,7 @@
     @apply card-elevated cursor-pointer hover:border-primary/30;
   }
 
-  /* Text styles with improved hierarchy */
+  /* Text styles with improved hierarchy and better contrast */
   .text-hero {
     @apply text-4xl md:text-5xl font-semibold tracking-tight text-foreground;
   }
@@ -172,10 +172,12 @@
 
   .text-body {
     @apply text-base text-muted-foreground leading-relaxed;
+    color: hsl(var(--muted-foreground));
   }
 
   .text-caption {
     @apply text-sm text-muted-foreground;
+    color: hsl(var(--muted-foreground));
   }
 
   /* Icon and emoji alignment */
