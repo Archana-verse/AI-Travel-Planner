@@ -1,0 +1,213 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts - Inter for clean, human-like typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Enhanced design system with Indian-inspired color palette */
+@layer base {
+  :root {
+    /* Sandstone background with warm undertones */
+    --background: 36 12% 98%;
+    --foreground: 210 11% 18%;
+
+    /* Light beige cards with subtle warmth */
+    --card: 36 20% 97%;
+    --card-foreground: 210 11% 18%;
+
+    --popover: 36 20% 97%;
+    --popover-foreground: 210 11% 18%;
+
+    /* Deep Saffron primary with Indian warmth */
+    --primary: 27 100% 47%;
+    --primary-foreground: 210 40% 98%;
+
+    /* Warm secondary tones */
+    --secondary: 36 30% 94%;
+    --secondary-foreground: 210 11% 18%;
+
+    --muted: 36 20% 95%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 27 50% 92%;
+    --accent-foreground: 210 11% 18%;
+
+    /* Error states with crimson */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Success with emerald */
+    --success: 158 64% 52%;
+    --success-foreground: 210 40% 98%;
+
+    --border: 36 30% 88%;
+    --input: 36 30% 88%;
+    --ring: 27 100% 47%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar with warm tones */
+    --sidebar-background: 36 20% 97%;
+    --sidebar-foreground: 210 11% 18%;
+    --sidebar-primary: 27 100% 47%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 36 30% 94%;
+    --sidebar-accent-foreground: 210 11% 18%;
+    --sidebar-border: 36 30% 88%;
+    --sidebar-ring: 27 100% 47%;
+  }
+
+  .dark {
+    /* Charcoal dark background */
+    --background: 220 13% 7%;
+    --foreground: 210 40% 95%;
+
+    --card: 220 13% 9%;
+    --card-foreground: 210 40% 95%;
+
+    --popover: 220 13% 9%;
+    --popover-foreground: 210 40% 95%;
+
+    /* Brighter saffron for dark mode */
+    --primary: 27 100% 55%;
+    --primary-foreground: 220 13% 7%;
+
+    --secondary: 220 13% 15%;
+    --secondary-foreground: 210 40% 95%;
+
+    --muted: 220 13% 13%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 220 13% 15%;
+    --accent-foreground: 210 40% 95%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 158 64% 52%;
+    --success-foreground: 210 40% 98%;
+
+    --border: 220 13% 18%;
+    --input: 220 13% 18%;
+    --ring: 27 100% 55%;
+
+    --sidebar-background: 220 13% 9%;
+    --sidebar-foreground: 210 40% 95%;
+    --sidebar-primary: 27 100% 55%;
+    --sidebar-primary-foreground: 220 13% 7%;
+    --sidebar-accent: 220 13% 15%;
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 220 13% 18%;
+    --sidebar-ring: 27 100% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Subtle background pattern for depth */
+  .bg-pattern {
+    background-image: 
+      radial-gradient(circle at 25px 25px, rgba(239, 108, 0, 0.02) 2px, transparent 0),
+      radial-gradient(circle at 75px 75px, rgba(239, 108, 0, 0.02) 2px, transparent 0);
+    background-size: 100px 100px;
+  }
+
+  /* Smooth transitions for theme switching */
+  .theme-transition {
+    @apply transition-colors duration-300 ease-in-out;
+  }
+
+  /* Custom gradient backgrounds */
+  .gradient-warm {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--accent)) 100%);
+  }
+
+  .gradient-saffron {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, #F59E0B 100%);
+  }
+
+  /* Enhanced button styles */
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-yellow-400 text-white font-medium px-6 py-3 rounded-xl 
+           shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-primary text-primary bg-background hover:bg-primary hover:text-white 
+           font-medium px-6 py-3 rounded-xl transition-all duration-200;
+  }
+
+  /* Card enhancements */
+  .card-elevated {
+    @apply bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.02] 
+           transition-all duration-200 theme-transition;
+  }
+
+  .card-interactive {
+    @apply card-elevated cursor-pointer hover:border-primary/30;
+  }
+
+  /* Text styles with improved hierarchy */
+  .text-hero {
+    @apply text-4xl md:text-5xl font-semibold tracking-tight text-foreground;
+  }
+
+  .text-heading {
+    @apply text-2xl md:text-3xl font-medium tracking-tight text-foreground;
+  }
+
+  .text-subheading {
+    @apply text-xl font-medium text-foreground;
+  }
+
+  .text-body {
+    @apply text-base text-muted-foreground leading-relaxed;
+  }
+
+  .text-caption {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Icon and emoji alignment */
+  .flex-center {
+    @apply flex items-center gap-2;
+  }
+
+  /* Selection states */
+  .selection-ring {
+    @apply ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  /* Hover effects */
+  .hover-lift {
+    @apply hover:-translate-y-1 transition-transform duration-200;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary)) / 0.8;
+}
