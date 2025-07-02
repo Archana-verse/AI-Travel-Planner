@@ -80,9 +80,9 @@ const Flights = () => {
             <div className="gradient-saffron p-3 rounded-2xl shadow-lg">
               <Plane className="text-white" size={32} />
             </div>
-            <h1 className="text-heading ml-4">Available Flights</h1>
+            <h1 className="text-heading ml-4 text-foreground">Available Flights</h1>
           </div>
-          <p className="text-body mb-2 text-lg">Choose your perfect flight</p>
+          <p className="text-foreground mb-2 text-lg">Choose your perfect flight</p>
           <p className="text-primary italic font-medium">Yatrigan kripya dhyaan dein — sabse sahi udaan aapke liye yahan tayaar hai.</p>
         </div>
 
@@ -93,7 +93,7 @@ const Flights = () => {
               key={flight.id} 
               className={`card-elevated overflow-hidden hover-lift ${
                 selectedFlight === flight.id ? 'selection-ring' : ''
-              } ${flight.aiRecommended ? 'bg-gradient-to-r from-[#fff7eb] to-white border-l-4 border-primary' : ''}`}
+              } ${flight.aiRecommended ? 'bg-gradient-to-r from-[#fff7eb] dark:from-[#2a1f0f] to-white dark:to-card border-l-4 border-primary' : ''}`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Popular/Cheapest Badge */}
@@ -113,7 +113,7 @@ const Flights = () => {
                       </div>
                       <div className="ml-4">
                         <div className="flex-center">
-                          <h3 className="text-subheading">{flight.airline}</h3>
+                          <h3 className="text-subheading text-foreground">{flight.airline}</h3>
                           {flight.aiRecommended && (
                             <div className="ml-3 flex-center bg-gradient-to-r from-primary to-yellow-400 text-white px-3 py-1 rounded-full text-xs font-medium">
                               <Zap size={12} className="mr-1" />
@@ -121,7 +121,7 @@ const Flights = () => {
                             </div>
                           )}
                         </div>
-                        <p className="text-caption">{flight.class}</p>
+                        <p className="text-muted-foreground">{flight.class}</p>
                       </div>
                       {selectedFlight === flight.id && (
                         <CheckCircle className="text-success ml-4 animate-scale-in" size={24} />
@@ -131,13 +131,13 @@ const Flights = () => {
                     <div className="flex items-center justify-between max-w-md mb-6">
                       <div className="text-center">
                         <div className="text-2xl font-semibold text-foreground">{flight.departure}</div>
-                        <div className="text-caption">{flight.departureAirport}</div>
+                        <div className="text-muted-foreground">{flight.departureAirport}</div>
                       </div>
                       
                       <div className="flex-1 flex items-center justify-center mx-8">
                         <div className="text-center">
                           <Plane className="text-primary mx-auto mb-1" size={20} />
-                          <div className="flex-center justify-center text-caption">
+                          <div className="flex-center justify-center text-muted-foreground">
                             <Clock size={14} />
                             <span>{flight.duration}</span>
                           </div>
@@ -147,18 +147,18 @@ const Flights = () => {
 
                       <div className="text-center">
                         <div className="text-2xl font-semibold text-foreground">{flight.arrival}</div>
-                        <div className="text-caption">{flight.arrivalAirport}</div>
+                        <div className="text-muted-foreground">{flight.arrivalAirport}</div>
                       </div>
                     </div>
 
                     {/* AI Recommendation Block */}
                     {flight.aiRecommended && flight.aiReasoning && (
-                      <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 mb-4 border border-primary/20">
+                      <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-xl p-4 mb-4 border border-primary/20">
                         <div className="flex-center mb-3">
                           <Zap className="text-primary" size={16} />
                           <h4 className="font-medium text-foreground ml-2">Why AI recommends this:</h4>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
                           <div><strong>Price:</strong> {flight.aiReasoning.price}</div>
                           <div><strong>Duration:</strong> {flight.aiReasoning.duration}</div>
                           <div><strong>Airline:</strong> {flight.aiReasoning.airline}</div>
@@ -170,7 +170,7 @@ const Flights = () => {
 
                   <div className="text-right ml-8">
                     <div className="text-3xl font-semibold text-primary mb-2">₹{flight.price.toLocaleString()}</div>
-                    <div className="text-caption mb-6">per person</div>
+                    <div className="text-muted-foreground mb-6">per person</div>
                     
                     <div className="space-y-3">
                       <button

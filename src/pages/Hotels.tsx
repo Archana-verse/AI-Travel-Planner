@@ -85,9 +85,9 @@ const Hotels = () => {
             <div className="gradient-saffron p-3 rounded-2xl shadow-lg">
               <Building className="text-white" size={32} />
             </div>
-            <h1 className="text-heading ml-4">Perfect Hotels for You</h1>
+            <h1 className="text-heading ml-4 text-foreground">Perfect Hotels for You</h1>
           </div>
-          <p className="text-body text-lg">Hand-picked accommodations for your comfort and convenience</p>
+          <p className="text-foreground text-lg">Hand-picked accommodations for your comfort and convenience</p>
         </div>
 
         {/* Hotels List */}
@@ -96,7 +96,7 @@ const Hotels = () => {
             <div 
               key={hotel.id} 
               className={`card-elevated overflow-hidden hover-lift ${
-                hotel.aiRecommended ? 'bg-gradient-to-r from-[#fffef2] to-white border-l-4 border-primary' : ''
+                hotel.aiRecommended ? 'bg-gradient-to-r from-[#fffef2] dark:from-[#2a1f0f] to-white dark:to-card border-l-4 border-primary' : ''
               }`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
@@ -119,7 +119,7 @@ const Hotels = () => {
                   <div className="flex flex-col lg:flex-row justify-between items-start mb-6">
                     <div className="flex-1">
                       <div className="flex-center mb-3">
-                        <h2 className="text-subheading">{hotel.name}</h2>
+                        <h2 className="text-subheading text-foreground">{hotel.name}</h2>
                         {hotel.aiRecommended && (
                           <div className="ml-3 flex-center bg-gradient-to-r from-primary to-yellow-400 text-white px-3 py-1 rounded-full text-xs font-medium">
                             <Zap size={12} className="mr-1" />
@@ -133,13 +133,13 @@ const Hotels = () => {
                           <span className="font-semibold text-foreground ml-1">{hotel.rating}</span>
                         </div>
                         <span className="text-muted-foreground mx-2">•</span>
-                        <span className="text-caption">{hotel.reviews} reviews</span>
+                        <span className="text-muted-foreground">{hotel.reviews} reviews</span>
                       </div>
                       <div className="flex-center mb-4">
                         <MapPin className="text-muted-foreground" size={16} />
-                        <span className="text-caption ml-1">{hotel.location}</span>
+                        <span className="text-muted-foreground ml-1">{hotel.location}</span>
                       </div>
-                      <p className="text-body mb-6 leading-relaxed">{hotel.description}</p>
+                      <p className="text-foreground mb-6 leading-relaxed">{hotel.description}</p>
 
                       {/* Amenities */}
                       <div className="mb-6">
@@ -150,7 +150,7 @@ const Hotels = () => {
                             return (
                               <div key={index} className="flex-center bg-accent px-3 py-2 rounded-lg">
                                 <Icon className="text-primary" size={16} />
-                                <span className="text-caption ml-2">{amenity.label}</span>
+                                <span className="text-foreground ml-2">{amenity.label}</span>
                               </div>
                             );
                           })}
@@ -159,12 +159,12 @@ const Hotels = () => {
 
                       {/* AI Recommendation Block */}
                       {hotel.aiRecommended && hotel.aiReasoning && (
-                        <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-primary/20">
+                        <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-xl p-4 border border-primary/20">
                           <div className="flex-center mb-3">
                             <Zap className="text-primary" size={16} />
                             <h4 className="font-medium text-foreground ml-2">Why AI recommends this:</h4>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
                             <div><strong>Rating:</strong> {hotel.aiReasoning.rating}</div>
                             <div><strong>Location:</strong> {hotel.aiReasoning.location}</div>
                             <div><strong>Amenities:</strong> {hotel.aiReasoning.amenities}</div>
@@ -177,7 +177,7 @@ const Hotels = () => {
                     {/* Price and Actions */}
                     <div className="text-right mt-6 lg:mt-0 lg:ml-8">
                       <div className="text-3xl font-semibold text-primary mb-1">₹{hotel.price.toLocaleString()}</div>
-                      <div className="text-caption mb-6">per night</div>
+                      <div className="text-muted-foreground mb-6">per night</div>
                       
                       <div className="space-y-3">
                         <button
