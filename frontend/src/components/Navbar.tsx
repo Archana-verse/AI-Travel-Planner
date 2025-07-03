@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, MapPin, Plane, Building, Calendar, MessageCircle, Moon, Sun } from 'lucide-react';
@@ -27,7 +26,7 @@ const Navbar = () => {
         <Link to="/" className="flex-center hover-lift">
           <div className="w-10 h-10 rounded-full shadow-lg overflow-hidden mr-3">
             <img 
-              src="/lovable-uploads/8046535e-962b-4e80-b6c5-36482f2a916b.png" 
+              src="/uploads/Inidan%20flag.png" 
               alt="Indian Flag" 
               className="w-full h-full object-cover"
             />
