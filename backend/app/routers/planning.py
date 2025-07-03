@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas import TravelPreferences, PlanResponse
 from app.models import TravelSession, Flight, Hotel, Itinerary
-from app.services.free_data_service import FreeDataService
-from app.services.free_ai_service import FreeAIService
+from app.agents.crew_manager import TravelPlannerCrew
 from app.services.booking_service import BookingService
 import uuid
 import logging
@@ -15,45 +14,41 @@ router = APIRouter()
 @router.post("/generate-plan", response_model=PlanResponse)
 async def generate_travel_plan(
     preferences: TravelPreferences,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
-    """Generate complete travel plan with flights, hotels, and itinerary using FREE services"""
+    """Generate complete travel plan using CrewAI agents"""
     
     try:
         # Create new session
         session_id = str(uuid.uuid4())
         session = TravelSession(
             id=session_id,
-            user_preferences=preferences.dict()
+            user_preferences=preferences.dict(),
+            status="processing"
         )
         db.add(session)
         db.commit()
         
-        # Initialize FREE services
-        data_service = FreeDataService()
-        ai_service = FreeAIService()
+        logger.info(f"Started trip planning for session {session_id} to {preferences.to_location}")
+        
+        # Initialize CrewAI manager
+        crew_manager = TravelPlannerCrew()
         booking_service = BookingService()
         
-        # Search flights using FREE data
-        logger.info(f"Searching flights for session {session_id} using FREE service")
-        flight_results = await data_service.search_flights(
-            origin=preferences.from_location,
-            destination=preferences.to_location,
-            departure_date=preferences.departure_date,
-            return_date=preferences.return_date,
-            travel_class=preferences.travel_class
-        )
+        # Execute CrewAI workflow
+        crew_results = await crew_manager.plan_complete_trip(preferences.dict())
         
-        # Analyze flights with FREE AI
-        flight_results = await ai_service.analyze_flight_recommendations(
-            flight_results, preferences.dict()
-        )
+        if crew_results['status'] != 'success':
+            raise HTTPException(status_code=500, detail="AI agents failed to generate plan")
         
-        # Save flights to database
+        # Process and save flight results
         flight_objects = []
-        for flight_data in flight_results:
+        for i, flight_data in enumerate(crew_results['flights'][:5]):
+            # Generate booking URL
             booking_url = booking_service.generate_flight_booking_url(
-                flight_data, preferences.departure_date
+                flight_data, 
+                preferences.dict()
             )
             
             flight = Flight(
@@ -64,12 +59,13 @@ async def generate_travel_plan(
                 arrival_airport=flight_data.get('arrival_airport', ''),
                 departure_time=flight_data.get('departure_time', ''),
                 arrival_time=flight_data.get('arrival_time', ''),
+                departure_date=flight_data.get('departure_date', preferences.departure_date),
+                return_date=flight_data.get('return_date', preferences.return_date),
                 duration=flight_data.get('duration', ''),
                 price=flight_data.get('price', 0),
-                flight_class=preferences.travel_class,
+                flight_class=flight_data.get('flight_class', preferences.travel_class),
                 stops=flight_data.get('stops', 0),
                 booking_url=booking_url,
-                thumbnail=flight_data.get('thumbnail', ''),
                 ai_recommended=flight_data.get('ai_recommended', False),
                 ai_reasoning=flight_data.get('ai_reasoning', {}),
                 raw_data=flight_data
@@ -77,28 +73,13 @@ async def generate_travel_plan(
             db.add(flight)
             flight_objects.append(flight)
         
-        # Search hotels using FREE data
-        logger.info(f"Searching hotels for session {session_id} using FREE service")
-        hotel_results = await data_service.search_hotels(
-            location=preferences.to_location,
-            check_in=preferences.departure_date,
-            check_out=preferences.return_date or preferences.departure_date,
-            guests=2
-        )
-        
-        # Analyze hotels with FREE AI
-        hotel_results = await ai_service.analyze_hotel_recommendations(
-            hotel_results, preferences.dict()
-        )
-        
-        # Save hotels to database
+        # Process and save hotel results
         hotel_objects = []
-        for hotel_data in hotel_results:
+        for i, hotel_data in enumerate(crew_results['hotels'][:5]):
+            # Generate booking URL
             booking_url = booking_service.generate_hotel_booking_url(
                 hotel_data,
-                preferences.departure_date,
-                preferences.return_date or preferences.departure_date,
-                preferences.to_location
+                preferences.dict()
             )
             
             hotel = Hotel(
@@ -111,7 +92,6 @@ async def generate_travel_plan(
                 amenities=hotel_data.get('amenities', []),
                 description=hotel_data.get('description', ''),
                 booking_url=booking_url,
-                thumbnail=hotel_data.get('thumbnail', ''),
                 ai_recommended=hotel_data.get('ai_recommended', False),
                 ai_reasoning=hotel_data.get('ai_reasoning', {}),
                 raw_data=hotel_data
@@ -119,27 +99,28 @@ async def generate_travel_plan(
             db.add(hotel)
             hotel_objects.append(hotel)
         
-        # Generate itinerary using FREE AI
-        logger.info(f"Generating itinerary for session {session_id} using FREE AI")
-        itinerary_data = await ai_service.generate_itinerary(
-            preferences.dict(), flight_results, hotel_results
-        )
-        
-        # Save itinerary to database
+        # Process and save itinerary
+        itinerary_data = crew_results['itinerary']
         itinerary = Itinerary(
             session_id=session_id,
             title=itinerary_data.get('title', ''),
             description=itinerary_data.get('description', ''),
             total_days=itinerary_data.get('total_days', 0),
             estimated_cost=itinerary_data.get('estimated_cost', 0),
-            daily_plans=itinerary_data.get('daily_plans', [])
+            daily_plans=itinerary_data.get('daily_plans', []),
+            ai_insights=itinerary_data.get('ai_insights', {})
         )
         db.add(itinerary)
         
+        # Update session status
+        session.status = "completed"
+        
         db.commit()
         
-        # Prepare response
-        from app.schemas import FlightResponse, HotelResponse, ItineraryResponse, DayPlan
+        logger.info(f"Successfully generated plan for session {session_id}")
+        
+        # Prepare response using schemas
+        from app.schemas import FlightResponse, HotelResponse, ItineraryResponse, DayPlan, ActivityResponse
         
         flights_response = [
             FlightResponse(
@@ -150,13 +131,14 @@ async def generate_travel_plan(
                 arrival_airport=f.arrival_airport,
                 departure_time=f.departure_time,
                 arrival_time=f.arrival_time,
+                departure_date=f.departure_date,
+                return_date=f.return_date,
                 duration=f.duration,
                 price=f.price,
                 currency=f.currency,
                 flight_class=f.flight_class,
                 stops=f.stops,
                 booking_url=f.booking_url,
-                thumbnail=f.thumbnail,
                 ai_recommended=f.ai_recommended,
                 ai_reasoning=f.ai_reasoning
             ) for f in flight_objects
@@ -174,11 +156,34 @@ async def generate_travel_plan(
                 amenities=h.amenities,
                 description=h.description,
                 booking_url=h.booking_url,
-                thumbnail=h.thumbnail,
                 ai_recommended=h.ai_recommended,
                 ai_reasoning=h.ai_reasoning
             ) for h in hotel_objects
         ]
+        
+        # Convert daily plans
+        daily_plans_response = []
+        for day_plan in itinerary.daily_plans:
+            activities = [
+                ActivityResponse(
+                    time=activity.get('time', ''),
+                    icon=activity.get('icon', ''),
+                    activity=activity.get('activity', ''),
+                    duration=activity.get('duration', ''),
+                    cost=activity.get('cost', 0),
+                    description=activity.get('description', '')
+                ) for activity in day_plan.get('activities', [])
+            ]
+            
+            daily_plans_response.append(
+                DayPlan(
+                    day=day_plan.get('day', 1),
+                    date=day_plan.get('date', ''),
+                    title=day_plan.get('title', ''),
+                    activities=activities,
+                    estimated_cost=day_plan.get('estimated_cost', 0)
+                )
+            )
         
         itinerary_response = ItineraryResponse(
             id=itinerary.id,
@@ -188,7 +193,8 @@ async def generate_travel_plan(
             total_days=itinerary.total_days,
             estimated_cost=itinerary.estimated_cost,
             currency=itinerary.currency,
-            daily_plans=[DayPlan(**day) for day in itinerary.daily_plans],
+            daily_plans=daily_plans_response,
+            ai_insights=itinerary.ai_insights,
             selected_flight=None,
             selected_hotel=None
         )
@@ -197,9 +203,19 @@ async def generate_travel_plan(
             session_id=session_id,
             flights=flights_response,
             hotels=hotels_response,
-            itinerary=itinerary_response
+            itinerary=itinerary_response,
+            status="completed"
         )
         
     except Exception as e:
         logger.error(f"Error generating travel plan: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate travel plan: {str(e)}")
+        
+        # Update session status to failed
+        if 'session' in locals():
+            session.status = "failed"
+            db.commit()
+        
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to generate travel plan: {str(e)}"
+        )

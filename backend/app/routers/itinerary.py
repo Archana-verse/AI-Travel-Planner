@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.schemas import ItineraryResponse, DayPlan, FlightResponse, HotelResponse
+from app.schemas import ItineraryResponse, DayPlan, FlightResponse, HotelResponse, ActivityResponse
 from app.models import Itinerary, SelectedFlight, SelectedHotel, Flight, Hotel
 from app.services.pdf_service import PDFService
 
@@ -33,13 +33,14 @@ async def get_itinerary(
                 arrival_airport=flight.arrival_airport,
                 departure_time=flight.departure_time,
                 arrival_time=flight.arrival_time,
+                departure_date=flight.departure_date,
+                return_date=flight.return_date,
                 duration=flight.duration,
                 price=flight.price,
                 currency=flight.currency,
                 flight_class=flight.flight_class,
                 stops=flight.stops,
                 booking_url=selected_flight.booking_url,
-                thumbnail=flight.thumbnail,
                 ai_recommended=flight.ai_recommended,
                 ai_reasoning=flight.ai_reasoning
             )
@@ -61,10 +62,33 @@ async def get_itinerary(
                 amenities=hotel.amenities,
                 description=hotel.description,
                 booking_url=selected_hotel.booking_url,
-                thumbnail=hotel.thumbnail,
                 ai_recommended=hotel.ai_recommended,
                 ai_reasoning=hotel.ai_reasoning
             )
+    
+    # Convert daily plans to response format
+    daily_plans_response = []
+    for day_plan in itinerary.daily_plans:
+        activities = [
+            ActivityResponse(
+                time=activity.get('time', ''),
+                icon=activity.get('icon', ''),
+                activity=activity.get('activity', ''),
+                duration=activity.get('duration', ''),
+                cost=activity.get('cost', 0),
+                description=activity.get('description', '')
+            ) for activity in day_plan.get('activities', [])
+        ]
+        
+        daily_plans_response.append(
+            DayPlan(
+                day=day_plan.get('day', 1),
+                date=day_plan.get('date', ''),
+                title=day_plan.get('title', ''),
+                activities=activities,
+                estimated_cost=day_plan.get('estimated_cost', 0)
+            )
+        )
     
     return ItineraryResponse(
         id=itinerary.id,
@@ -74,7 +98,8 @@ async def get_itinerary(
         total_days=itinerary.total_days,
         estimated_cost=itinerary.estimated_cost,
         currency=itinerary.currency,
-        daily_plans=[DayPlan(**day) for day in itinerary.daily_plans],
+        daily_plans=daily_plans_response,
+        ai_insights=itinerary.ai_insights,
         selected_flight=selected_flight_data,
         selected_hotel=selected_hotel_data
     )
@@ -91,8 +116,8 @@ async def download_itinerary_pdf(
     if not itinerary:
         raise HTTPException(status_code=404, detail="Itinerary not found")
     
-    # Get selected flight and hotel data
-    selected_flight_data = {}
+    # Get selected flight data
+    selected_flight_data = None
     selected_flight = db.query(SelectedFlight).filter(SelectedFlight.session_id == session_id).first()
     if selected_flight:
         flight = db.query(Flight).filter(Flight.id == selected_flight.flight_id).first()
@@ -103,10 +128,19 @@ async def download_itinerary_pdf(
                 'departure_airport': flight.departure_airport,
                 'arrival_airport': flight.arrival_airport,
                 'departure_time': flight.departure_time,
-                'arrival_time': flight.arrival_time
+                'arrival_time': flight.arrival_time,
+                'departure_date': flight.departure_date,
+                'return_date': flight.return_date,
+                'duration': flight.duration,
+                'price': flight.price,
+                'flight_class': flight.flight_class,
+                'rating': None,
+                'reviews_count': None,
+                'amenities': None
             }
     
-    selected_hotel_data = {}
+    # Get selected hotel data
+    selected_hotel_data = None
     selected_hotel = db.query(SelectedHotel).filter(SelectedHotel.session_id == session_id).first()
     if selected_hotel:
         hotel = db.query(Hotel).filter(Hotel.id == selected_hotel.hotel_id).first()
@@ -114,28 +148,37 @@ async def download_itinerary_pdf(
             selected_hotel_data = {
                 'name': hotel.name,
                 'location': hotel.location,
-                'rating': hotel.rating
+                'rating': hotel.rating,
+                'reviews_count': hotel.reviews_count,
+                'price_per_night': hotel.price_per_night,
+                'amenities': hotel.amenities
             }
     
-    # Generate PDF
-    pdf_service = PDFService()
+    # Prepare itinerary data for PDF
     itinerary_data = {
         'title': itinerary.title,
         'description': itinerary.description,
         'total_days': itinerary.total_days,
         'estimated_cost': itinerary.estimated_cost,
-        'daily_plans': itinerary.daily_plans
+        'currency': itinerary.currency,
+        'daily_plans': itinerary.daily_plans,
+        'ai_insights': itinerary.ai_insights
     }
     
+    # Generate PDF
+    pdf_service = PDFService()
     pdf_bytes = pdf_service.generate_itinerary_pdf(
-        itinerary_data, 
-        selected_flight_data, 
-        selected_hotel_data
+        itinerary_data=itinerary_data,
+        selected_flight=selected_flight_data,
+        selected_hotel=selected_hotel_data
     )
     
     # Return PDF response
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename=itinerary_{session_id}.pdf"}
+        headers={
+            "Content-Disposition": f"attachment; filename=raahi_itinerary_{session_id}.pdf",
+            "Content-Length": str(len(pdf_bytes))
+        }
     )

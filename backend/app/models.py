@@ -9,15 +9,17 @@ class TravelSession(Base):
     
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     user_preferences = Column(JSON)
+    status = Column(String, default="active")  # active, completed, expired
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
     # Relationships
-    flights = relationship("Flight", back_populates="session")
-    hotels = relationship("Hotel", back_populates="session")
-    itinerary = relationship("Itinerary", back_populates="session", uselist=False)
-    selected_flight = relationship("SelectedFlight", back_populates="session", uselist=False)
-    selected_hotel = relationship("SelectedHotel", back_populates="session", uselist=False)
+    flights = relationship("Flight", back_populates="session", cascade="all, delete-orphan")
+    hotels = relationship("Hotel", back_populates="session", cascade="all, delete-orphan")
+    itinerary = relationship("Itinerary", back_populates="session", uselist=False, cascade="all, delete-orphan")
+    selected_flight = relationship("SelectedFlight", back_populates="session", uselist=False, cascade="all, delete-orphan")
+    selected_hotel = relationship("SelectedHotel", back_populates="session", uselist=False, cascade="all, delete-orphan")
+    chat_messages = relationship("ChatMessage", back_populates="session", cascade="all, delete-orphan")
 
 class Flight(Base):
     __tablename__ = "flights"
@@ -30,16 +32,18 @@ class Flight(Base):
     arrival_airport = Column(String)
     departure_time = Column(String)
     arrival_time = Column(String)
+    departure_date = Column(String)
+    return_date = Column(String)
     duration = Column(String)
     price = Column(Float)
     currency = Column(String, default="INR")
     flight_class = Column(String)
     stops = Column(Integer, default=0)
     booking_url = Column(String)
-    thumbnail = Column(String)
     ai_recommended = Column(Boolean, default=False)
     ai_reasoning = Column(JSON)
     raw_data = Column(JSON)
+    created_at = Column(DateTime, server_default=func.now())
     
     session = relationship("TravelSession", back_populates="flights")
 
@@ -57,10 +61,10 @@ class Hotel(Base):
     amenities = Column(JSON)
     description = Column(Text)
     booking_url = Column(String)
-    thumbnail = Column(String)
     ai_recommended = Column(Boolean, default=False)
     ai_reasoning = Column(JSON)
     raw_data = Column(JSON)
+    created_at = Column(DateTime, server_default=func.now())
     
     session = relationship("TravelSession", back_populates="hotels")
 
@@ -74,7 +78,8 @@ class Itinerary(Base):
     total_days = Column(Integer)
     estimated_cost = Column(Float)
     currency = Column(String, default="INR")
-    daily_plans = Column(JSON)  # Array of day-wise activities
+    daily_plans = Column(JSON)
+    ai_insights = Column(JSON)
     created_at = Column(DateTime, server_default=func.now())
     
     session = relationship("TravelSession", back_populates="itinerary")
@@ -109,7 +114,10 @@ class ChatMessage(Base):
     __tablename__ = "chat_messages"
     
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    session_id = Column(String)
+    session_id = Column(String, ForeignKey("travel_sessions.id"))
     message = Column(Text)
     response = Column(Text)
+    message_type = Column(String, default="general")  # general, flight, hotel, itinerary
     created_at = Column(DateTime, server_default=func.now())
+    
+    session = relationship("TravelSession", back_populates="chat_messages")

@@ -21,13 +21,14 @@ class FlightResponse(BaseModel):
     arrival_airport: str
     departure_time: str
     arrival_time: str
+    departure_date: str
+    return_date: Optional[str]
     duration: str
     price: float
     currency: str
     flight_class: str
     stops: int
     booking_url: str
-    thumbnail: Optional[str]
     ai_recommended: bool
     ai_reasoning: Optional[Dict[str, Any]]
 
@@ -42,15 +43,23 @@ class HotelResponse(BaseModel):
     amenities: List[Dict[str, Any]]
     description: str
     booking_url: str
-    thumbnail: Optional[str]
     ai_recommended: bool
     ai_reasoning: Optional[Dict[str, Any]]
+
+class ActivityResponse(BaseModel):
+    time: str
+    icon: str
+    activity: str
+    duration: str
+    cost: float
+    description: Optional[str]
 
 class DayPlan(BaseModel):
     day: int
     date: str
     title: str
-    activities: List[Dict[str, Any]]
+    activities: List[ActivityResponse]
+    estimated_cost: float
 
 class ItineraryResponse(BaseModel):
     id: str
@@ -61,6 +70,7 @@ class ItineraryResponse(BaseModel):
     estimated_cost: float
     currency: str
     daily_plans: List[DayPlan]
+    ai_insights: Optional[Dict[str, Any]]
     selected_flight: Optional[FlightResponse]
     selected_hotel: Optional[HotelResponse]
 
@@ -69,6 +79,7 @@ class PlanResponse(BaseModel):
     flights: List[FlightResponse]
     hotels: List[HotelResponse]
     itinerary: ItineraryResponse
+    status: str = "completed"
 
 class FlightSelection(BaseModel):
     session_id: str
@@ -83,7 +94,9 @@ class HotelSelection(BaseModel):
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
+    message_type: str = "general"
 
 class ChatResponse(BaseModel):
     response: str
     session_id: Optional[str] = None
+    suggestions: Optional[List[str]] = None
