@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Building, Star, Wifi, Car, Utensils, Waves } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -69,7 +68,7 @@ const Hotels = () => {
 
   const handleHotelSelect = (hotelId: string) => {
     console.log('Selecting hotel:', hotelId);
-    navigate('/itinerary');
+    navigate('/itinerary'); // Redirect immediately after selection
   };
 
   const handleBookHotel = (hotelId: string) => {

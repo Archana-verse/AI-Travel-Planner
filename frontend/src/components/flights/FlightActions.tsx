@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CheckCircle } from 'lucide-react';
 
@@ -21,7 +20,6 @@ const FlightActions = ({
     <div className="text-right ml-8">
       <div className="text-3xl font-semibold text-primary mb-2">₹{price.toLocaleString()}</div>
       <div className="text-muted-foreground mb-6">per person</div>
-      
       <div className="space-y-3">
         <button
           onClick={() => onFlightSelect(flightId)}
@@ -33,12 +31,7 @@ const FlightActions = ({
         >
           {selectedFlight === flightId ? 'Selected' : 'Select Flight'}
         </button>
-        <button
-          onClick={() => onBookNow(flightId)}
-          className="btn-secondary w-full"
-        >
-          Book Now
-        </button>
+        {/* Book Now button removed */}
       </div>
     </div>
   );

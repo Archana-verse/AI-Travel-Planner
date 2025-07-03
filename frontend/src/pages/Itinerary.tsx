@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Calendar, MapPin, Plane, Hotel, Download, RefreshCw, Copy, Clock, IndianRupee, CheckCircle } from 'lucide-react';
 
@@ -114,6 +113,13 @@ const Itinerary = () => {
                 <span className="font-semibold text-primary">{tripSummary.flight.price}</span>
               </div>
             </div>
+            <button
+              className="btn-primary w-full mt-6"
+              style={{ fontSize: '1rem', padding: '0.75rem 0' }}
+              onClick={() => {/* Add booking logic here */}}
+            >
+              BOOK NOW
+            </button>
           </div>
 
           {/* Hotel Summary */}
@@ -149,6 +155,13 @@ const Itinerary = () => {
                 <span className="font-semibold text-primary">{tripSummary.hotel.price}</span>
               </div>
             </div>
+            <button
+              className="btn-primary w-full mt-6"
+              style={{ fontSize: '1rem', padding: '0.75rem 0' }}
+              onClick={() => {/* Add booking logic here */}}
+            >
+              BOOK NOW
+            </button>
           </div>
         </div>
 

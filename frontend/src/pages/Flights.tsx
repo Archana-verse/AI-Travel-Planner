@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Plane } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -61,6 +60,7 @@ const Flights = () => {
 
   const handleFlightSelect = (flightId: string) => {
     setSelectedFlight(flightId);
+    navigate('/hotels'); // Redirect immediately after selection
   };
 
   const handleBookNow = (flightId: string) => {
