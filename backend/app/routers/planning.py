@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas import TravelPreferences, PlanResponse
 from app.models import TravelSession, Flight, Hotel, Itinerary
-from app.services.serpapi_service import SerpAPIService
-from app.services.gemini_service import GeminiService
+from app.services.free_data_service import FreeDataService
+from app.services.free_ai_service import FreeAIService
 from app.services.booking_service import BookingService
 import uuid
 import logging
@@ -17,7 +17,7 @@ async def generate_travel_plan(
     preferences: TravelPreferences,
     db: Session = Depends(get_db)
 ):
-    """Generate complete travel plan with flights, hotels, and itinerary"""
+    """Generate complete travel plan with flights, hotels, and itinerary using FREE services"""
     
     try:
         # Create new session
@@ -29,14 +29,14 @@ async def generate_travel_plan(
         db.add(session)
         db.commit()
         
-        # Initialize services
-        serpapi = SerpAPIService()
-        gemini = GeminiService()
+        # Initialize FREE services
+        data_service = FreeDataService()
+        ai_service = FreeAIService()
         booking_service = BookingService()
         
-        # Search flights
-        logger.info(f"Searching flights for session {session_id}")
-        flight_results = await serpapi.search_flights(
+        # Search flights using FREE data
+        logger.info(f"Searching flights for session {session_id} using FREE service")
+        flight_results = await data_service.search_flights(
             origin=preferences.from_location,
             destination=preferences.to_location,
             departure_date=preferences.departure_date,
@@ -44,8 +44,8 @@ async def generate_travel_plan(
             travel_class=preferences.travel_class
         )
         
-        # Analyze flights with AI
-        flight_results = await gemini.analyze_flight_recommendations(
+        # Analyze flights with FREE AI
+        flight_results = await ai_service.analyze_flight_recommendations(
             flight_results, preferences.dict()
         )
         
@@ -77,17 +77,17 @@ async def generate_travel_plan(
             db.add(flight)
             flight_objects.append(flight)
         
-        # Search hotels
-        logger.info(f"Searching hotels for session {session_id}")
-        hotel_results = await serpapi.search_hotels(
+        # Search hotels using FREE data
+        logger.info(f"Searching hotels for session {session_id} using FREE service")
+        hotel_results = await data_service.search_hotels(
             location=preferences.to_location,
             check_in=preferences.departure_date,
             check_out=preferences.return_date or preferences.departure_date,
-            guests=2  # Default to 2 guests
+            guests=2
         )
         
-        # Analyze hotels with AI
-        hotel_results = await gemini.analyze_hotel_recommendations(
+        # Analyze hotels with FREE AI
+        hotel_results = await ai_service.analyze_hotel_recommendations(
             hotel_results, preferences.dict()
         )
         
@@ -119,9 +119,9 @@ async def generate_travel_plan(
             db.add(hotel)
             hotel_objects.append(hotel)
         
-        # Generate itinerary
-        logger.info(f"Generating itinerary for session {session_id}")
-        itinerary_data = await gemini.generate_itinerary(
+        # Generate itinerary using FREE AI
+        logger.info(f"Generating itinerary for session {session_id} using FREE AI")
+        itinerary_data = await ai_service.generate_itinerary(
             preferences.dict(), flight_results, hotel_results
         )
         

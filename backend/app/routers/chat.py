@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas import ChatRequest, ChatResponse
 from app.models import ChatMessage, TravelSession
-from app.services.gemini_service import GeminiService
+from app.services.free_ai_service import FreeAIService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,10 +14,10 @@ async def chat_with_ai(
     request: ChatRequest,
     db: Session = Depends(get_db)
 ):
-    """Chat with AI travel assistant"""
+    """Chat with FREE AI travel assistant"""
     
     try:
-        gemini = GeminiService()
+        ai_service = FreeAIService()
         
         # Build context from session if provided
         context = ""
@@ -34,8 +34,8 @@ async def chat_with_ai(
                 - Interests: {', '.join(prefs.get('interests', []))}
                 """
         
-        # Generate AI response
-        ai_response = await gemini.chat_response(request.message, context)
+        # Generate AI response using FREE service
+        ai_response = await ai_service.chat_response(request.message, context)
         
         # Save chat message
         chat_message = ChatMessage(

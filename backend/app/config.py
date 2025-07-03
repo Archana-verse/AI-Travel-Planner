@@ -10,14 +10,10 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite:///./raahi.db"
     
-    # External APIs
-    SERPAPI_KEY: str
-    GOOGLE_CLOUD_PROJECT: str
-    GOOGLE_APPLICATION_CREDENTIALS: Optional[str] = None
-    
-    # Gemini Configuration
-    GEMINI_MODEL: str = "gemini-1.5-pro"
-    GEMINI_LOCATION: str = "us-central1"
+    # Free alternatives
+    OPENAI_API_KEY: Optional[str] = None
+    USE_MOCK_DATA: bool = True
+    ENABLE_WEB_SCRAPING: bool = True
     
     class Config:
         env_file = ".env"
