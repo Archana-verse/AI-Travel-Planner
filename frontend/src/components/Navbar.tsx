@@ -22,7 +22,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-card border-b border-border px-6 py-4 theme-transition sticky top-0 z-50 backdrop-blur-sm bg-card/95">
+    <nav className="bg-card/95 border-b border-border px-6 py-4 theme-transition sticky top-0 z-50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex-center hover-lift">
           <div className="w-10 h-10 rounded-full shadow-lg overflow-hidden mr-3">
