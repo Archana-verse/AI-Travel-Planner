@@ -21,7 +21,7 @@ def search_flights(origin, destination, departure_date, return_date, travel_clas
     search = GoogleSearch(params)
     results = search.get_dict()
     flights = results.get("best_flights", []) + results.get("other_flights", [])
-    
+
     return [
         {
             "airline": f["airline"],
@@ -39,11 +39,12 @@ def search_hotels(
     checkout_date: str,
     budget: str = "",
     travel_class: str = "",
-    group_type: str = ""
+    group_type: str = "",
+    dietary_preferences: str = "",
+    interests: list = []   
 ):
-    # You can optionally use budget/travel_class/group_type to modify query
-    # Example:
-    location = f"{destination} hotels {budget} budget for {group_type}"
+    interest_str = ", ".join(interests)
+    location = f"{destination} hotels {budget} budget for {group_type} with {dietary_preferences} food near {interest_str}"
 
     params = {
         "engine": "google_hotels",
@@ -58,7 +59,6 @@ def search_hotels(
     search = GoogleSearch(params)
     results = search.get_dict()
 
-    # Realistic filtering — assuming results['hotels_results'] contains hotel list
     hotels = []
     for hotel in results.get("hotels_results", []):
         hotels.append({
