@@ -10,3 +10,4 @@ export interface FormData {
   interests: string[];
   diet: string;
 }
+
