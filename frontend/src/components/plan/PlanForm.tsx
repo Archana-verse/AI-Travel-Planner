@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -25,10 +24,37 @@ const PlanForm = () => {
     diet: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Trip planning form submitted:', formData);
-    navigate('/flights');
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/generate-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from_: formData.from,
+          to: formData.to,
+          departureDate: formData.departureDate,
+          returnDate: formData.returnDate,
+          travelClass: formData.travelClass,
+          budget: formData.budget,
+          travelers: formData.travelers,
+          interests: formData.interests,
+          diet: formData.diet
+        })
+      });
+
+      const data = await response.json();
+
+      // Save to localStorage for access on other pages
+      localStorage.setItem('planResults', JSON.stringify(data));
+
+      // Redirect to Flights page
+      navigate('/flights');
+    } catch (error) {
+      console.error('Error generating plan:', error);
+    }
   };
 
   return (
@@ -48,7 +74,7 @@ const PlanForm = () => {
         <Sparkles size={20} />
         <span>Find My Perfect Trip</span>
       </button>
-    </form>  
+    </form>
   );
 };
 
