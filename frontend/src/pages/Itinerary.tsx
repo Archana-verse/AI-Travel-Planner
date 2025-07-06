@@ -1,72 +1,74 @@
-import React from 'react';
-import { Calendar, MapPin, Plane, Hotel, Download, RefreshCw, Copy, Clock, IndianRupee, CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {
+  Calendar, Plane, Download, RefreshCw, Copy,
+  Clock, IndianRupee, CheckCircle
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+
+// ✅ Airline → Official Booking URL mapping
+const airlineBookingUrls: Record<string, string> = {
+  'IndiGo': 'https://www.goindigo.in/',
+  'Air India': 'https://www.airindia.com/',
+  'Vistara': 'https://www.airvistara.com/',
+  'SpiceJet': 'https://book.spicejet.com/',
+  'Go First': 'https://www.flygofirst.com/',
+  'Akasa Air': 'https://www.akasaair.com/',
+  'Alliance Air': 'https://www.allianceair.in/',
+  'AirAsia India': 'https://www.airasia.co.in/',
+  'Star Air': 'https://www.starair.in/',
+};
 
 const Itinerary = () => {
-  const tripSummary = {
-    flight: {
-      airline: 'IndiGo',
-      route: 'Delhi → Kolkata',
-      departure: '08:30 AM',
-      arrival: '11:15 AM',
-      price: '₹4,890',
-      date: 'June 27, 2025'
-    },
-    hotel: {
-      name: 'Rukmini Guest House',
-      location: 'Park Street, Kolkata',
-      checkIn: 'June 27, 2025',
-      checkOut: 'June 30, 2025',
-      price: '₹2,400/night',
-      rating: '4.2'
+  const navigate = useNavigate();
+  const [flight, setFlight] = useState<any | null>(null);
+
+  useEffect(() => {
+    const savedFlight = localStorage.getItem('selectedFlight');
+    if (savedFlight) {
+      setFlight(JSON.parse(savedFlight));
     }
-  };
+  }, []);
 
   const itinerary = [
     {
       day: 1,
       date: 'June 27, 2025',
-      title: 'Arrival in Kolkata',
+      title: 'Arrival in Destination',
       activities: [
-        { time: '11:15 AM', icon: '✈️', activity: 'Arrive at Netaji Subhas Chandra Bose Airport' },
-        { time: '12:30 PM', icon: '🏨', activity: 'Check-in at Rukmini Guest House' },
-        { time: '2:00 PM', icon: '🏛️', activity: 'Visit Victoria Memorial (2 hours)' },
-        { time: '7:30 PM', icon: '🍽️', activity: 'Dinner at Peter Cat – Chelo Kebabs' }
+        { time: '11:15 AM', icon: '✈️', activity: 'Arrive at airport' },
+        { time: '12:30 PM', icon: '🏨', activity: 'Check-in at hotel' },
+        { time: '2:00 PM', icon: '🏛️', activity: 'Visit historical place' },
+        { time: '7:30 PM', icon: '🍽️', activity: 'Dinner at local restaurant' }
       ]
     },
     {
       day: 2,
       date: 'June 28, 2025',
-      title: 'Historical Kolkata',
+      title: 'Exploration Day',
       activities: [
-        { time: '9:00 AM', icon: '🌉', activity: 'Visit Howrah Bridge (1 hr)' },
-        { time: '11:00 AM', icon: '🌼', activity: 'Explore Flower Market (1 hr)' },
-        { time: '2:00 PM', icon: '🏛️', activity: 'Indian Museum (3 hrs)' },
-        { time: '7:00 PM', icon: '🍛', activity: 'Dinner at 6 Ballygunge Place (Bengali cuisine)' }
-      ]
-    },
-    {
-      day: 3,
-      date: 'June 29, 2025',
-      title: 'Cultural Exploration',
-      activities: [
-        { time: '9:00 AM', icon: '🕌', activity: 'Kalighat Kali Temple (1.5 hrs)' },
-        { time: '11:30 AM', icon: '🏛️', activity: 'Dakshineswar Kali Temple (2 hrs)' },
-        { time: '3:00 PM', icon: '📚', activity: 'College Street Book Market (2 hrs)' },
-        { time: '7:30 PM', icon: '🍤', activity: 'Dinner at Oh! Calcutta (Bengali seafood)' }
+        { time: '9:00 AM', icon: '🌉', activity: 'Visit major attraction' },
+        { time: '11:00 AM', icon: '🌼', activity: 'Explore markets' },
+        { time: '2:00 PM', icon: '🏛️', activity: 'Museum tour' },
+        { time: '7:00 PM', icon: '🍛', activity: 'Dinner at cultural restaurant' }
       ]
     }
   ];
 
-  const handleDownloadPDF = () => {
-    console.log('Downloading PDF...');
-  };
+  const handleDownloadPDF = () => console.log('Downloading PDF...');
+  const handleRegenerateItinerary = () => navigate('/plan');
+  const handleCopyToClipboard = () => console.log('Copied to clipboard');
 
-  const handleRegenerateItinerary = () => {
-    console.log('Regenerating itinerary...');
-  };
+  const handleBookFlight = () => {
+    if (!flight) return;
+    const airline = flight.airline?.trim();
+    const redirectUrl = airlineBookingUrls[airline];
 
-  const handleCopyToClipboard = () => {
-    console.log('Copying to clipboard...');
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    } else {
+      alert(`Booking link for airline "${airline}" not available.`);
+    }
   };
 
   return (
@@ -77,107 +79,60 @@ const Itinerary = () => {
           <h1 className="text-hero mb-4 bg-gradient-to-r from-primary to-yellow-500 bg-clip-text text-transparent">
             Your Perfect Itinerary
           </h1>
-          <p className="text-body text-lg">
-            AI-generated travel plan for your journey to Kolkata
-          </p>
+          <p className="text-body text-lg">AI-generated travel plan for your journey</p>
         </div>
 
-        {/* Trip Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Flight Summary */}
-          <div className="card-elevated p-6 animate-scale-in">
-            <div className="flex-center mb-4">
-              <div className="gradient-saffron p-3 rounded-xl shadow-md">
-                <Plane className="text-white" size={24} />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-subheading">Flight Details</h3>
-                <p className="text-caption">{tripSummary.flight.airline}</p>
-              </div>
+        {/* Flight Summary Card */}
+        <div className="card-elevated p-6 animate-scale-in mb-8">
+          <div className="flex-center mb-4">
+            <div className="gradient-saffron p-3 rounded-xl shadow-md">
+              <Plane className="text-white" size={24} />
             </div>
+            <div className="ml-4">
+              <h3 className="text-subheading">Flight Details</h3>
+              <p className="text-caption">{flight?.airline || 'No flight selected'}</p>
+            </div>
+          </div>
+          {flight ? (
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Route:</span>
-                <span className="font-medium text-foreground">{tripSummary.flight.route}</span>
+                <span className="font-medium text-foreground">
+                  {flight.departureAirport} → {flight.arrivalAirport}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Departure:</span>
-                <span className="font-medium text-foreground">{tripSummary.flight.departure}</span>
+                <span className="font-medium text-foreground">{flight.departure}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Arrival:</span>
-                <span className="font-medium text-foreground">{tripSummary.flight.arrival}</span>
+                <span className="font-medium text-foreground">{flight.arrival}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Price:</span>
-                <span className="font-semibold text-primary">{tripSummary.flight.price}</span>
+                <span className="font-semibold text-primary">₹{flight.price}</span>
               </div>
             </div>
-            <button
-              className="btn-primary w-full mt-6"
-              style={{ fontSize: '1rem', padding: '0.75rem 0' }}
-              onClick={() => {/* Add booking logic here */}}
-            >
-              BOOK NOW
-            </button>
-          </div>
-
-          {/* Hotel Summary */}
-          <div className="card-elevated p-6 animate-scale-in" style={{ animationDelay: '0.1s' }}>
-            <div className="flex-center mb-4">
-              <div className="gradient-saffron p-3 rounded-xl shadow-md">
-                <Hotel className="text-white" size={24} />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-subheading">Hotel Details</h3>
-                <div className="flex-center">
-                  <span className="text-caption mr-2">Rating:</span>
-                  <span className="text-yellow-500">⭐</span>
-                  <span className="text-caption ml-1">{tripSummary.hotel.rating}</span>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Hotel:</span>
-                <span className="font-medium text-foreground">{tripSummary.hotel.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Location:</span>
-                <span className="font-medium text-foreground">{tripSummary.hotel.location}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Check-in:</span>
-                <span className="font-medium text-foreground">{tripSummary.hotel.checkIn}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Price:</span>
-                <span className="font-semibold text-primary">{tripSummary.hotel.price}</span>
-              </div>
-            </div>
-            <button
-              className="btn-primary w-full mt-6"
-              style={{ fontSize: '1rem', padding: '0.75rem 0' }}
-              onClick={() => {/* Add booking logic here */}}
-            >
-              BOOK NOW
-            </button>
-          </div>
+          ) : (
+            <p className="text-muted-foreground">No flight selected</p>
+          )}
+          <button
+            className="btn-primary w-full mt-6"
+            style={{ fontSize: '1rem', padding: '0.75rem 0' }}
+            onClick={handleBookFlight}
+          >
+            BOOK NOW
+          </button>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-12 animate-fade-in">
-          <button
-            onClick={handleDownloadPDF}
-            className="btn-primary flex-center"
-          >
+          <button onClick={handleDownloadPDF} className="btn-primary flex-center">
             <Download size={18} />
             <span>Download PDF</span>
           </button>
-          <button
-            onClick={handleRegenerateItinerary}
-            className="btn-secondary flex-center"
-          >
+          <button onClick={handleRegenerateItinerary} className="btn-secondary flex-center">
             <RefreshCw size={18} />
             <span>Regenerate</span>
           </button>
@@ -193,8 +148,8 @@ const Itinerary = () => {
         {/* Itinerary Cards */}
         <div className="space-y-8">
           {itinerary.map((day, dayIndex) => (
-            <div 
-              key={day.day} 
+            <div
+              key={day.day}
               className="card-elevated p-8 animate-scale-in"
               style={{ animationDelay: `${dayIndex * 0.1}s` }}
             >
@@ -215,8 +170,8 @@ const Itinerary = () => {
 
               <div className="space-y-4">
                 {day.activities.map((activity, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="flex items-start space-x-4 p-4 rounded-xl bg-accent/50 hover:bg-accent transition-colors duration-200"
                   >
                     <div className="flex-center min-w-fit">
@@ -235,7 +190,7 @@ const Itinerary = () => {
           ))}
         </div>
 
-        {/* Total Cost Summary */}
+        {/* Total Cost */}
         <div className="mt-12 card-elevated p-8 bg-gradient-to-r from-accent/30 to-primary/5 animate-fade-in">
           <div className="flex items-center justify-between">
             <div className="flex-center">
@@ -245,11 +200,11 @@ const Itinerary = () => {
               <h3 className="text-subheading ml-4">Estimated Total Cost</h3>
             </div>
             <div className="text-4xl font-semibold bg-gradient-to-r from-primary to-yellow-500 bg-clip-text text-transparent">
-              ₹12,090
+              ₹12,000
             </div>
           </div>
           <p className="text-caption mt-4 leading-relaxed">
-            *Includes flights, accommodation, and estimated meal costs. Actual costs may vary based on your preferences and seasonal pricing.
+            *Includes flights, accommodation, and estimated meal costs. Actual costs may vary.
           </p>
         </div>
       </div>

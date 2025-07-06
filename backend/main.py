@@ -1,26 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes.plan import router as plan_router
+from app.routes.redirect import router as redirect_router
 from dotenv import load_dotenv
 import os
-
-# ✅ Load .env variables
-load_dotenv()  # Looks for .env in current directory
-
-# ✅ Print keys to confirm
-print("🔑 SERPAPI_API_KEY loaded:", os.getenv("SERPAPI_API_KEY")[:8], "********")
-print("🔑 GEMINIAPI_KEY loaded:", os.getenv("GEMINIAPI_KEY")[:8], "********")
-
+load_dotenv()
+serp_key = os.getenv("SERPAPI_API_KEY", "")
+gemini_key = os.getenv("GEMINIAPI_KEY", "")
+print("🔑 SERPAPI_API_KEY loaded:", serp_key[:8] + "********" if serp_key else "❌ Not Found")
+print("🔑 GEMINIAPI_KEY loaded:", gemini_key[:8] + "********" if gemini_key else "❌ Not Found")
 app = FastAPI()
-
-# ✅ CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ✅ Include all backend routes under /api
 app.include_router(plan_router, prefix="/api")
+app.include_router(redirect_router, prefix="/api")

@@ -31,3 +31,5 @@ def generate_plan(plan: PlanInput):
         "hotels": [],      # To be filled next
         "itinerary": []    # To be filled next
     }
+
+

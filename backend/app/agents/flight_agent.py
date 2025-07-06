@@ -1,6 +1,7 @@
 from app.services.serpapi_service import search_flights
 from app.services.gemini_service import generate_gemini_response
 import json
+import re
 
 def get_flight_recommendations(from_city, to_city, departure_date, preferences):
     flights = search_flights(from_city, to_city, departure_date)
@@ -8,14 +9,13 @@ def get_flight_recommendations(from_city, to_city, departure_date, preferences):
     if not flights:
         return []
 
-    # Sort by price and mark the cheapest flight
+    # Sort by price and mark the cheapest
     def clean_price(price_str):
         return int(str(price_str).replace("₹", "").replace(",", "").strip())
 
     flights.sort(key=lambda x: clean_price(x["price"]))
     flights[0]["cheapest"] = True
 
-    # Prepare structured prompt for Gemini
     try:
         prompt = f"""
 You are an AI travel assistant. A user is flying from {from_city} to {to_city} on {departure_date}.
@@ -40,23 +40,20 @@ Respond ONLY in this strict JSON format:
         gemini_reply = generate_gemini_response(prompt)
         print("\n🧠 Gemini Raw Response:\n", gemini_reply)
 
-        # Strip markdown and extract JSON only
-        gemini_reply = gemini_reply.strip()
+        # Safely extract JSON
+        match = re.search(r'\{.*\}', gemini_reply, re.DOTALL)
+        if match:
+            parsed = json.loads(match.group())
 
-        # Remove backticks and ```json if present
-        if gemini_reply.startswith("```json"):
-            gemini_reply = gemini_reply[7:]
-        if gemini_reply.endswith("```"):
-            gemini_reply = gemini_reply[:-3]
-
-        parsed = json.loads(gemini_reply)
-
-        # Match and update the recommended flight
-        for flight in flights:
-            if flight["id"] == parsed.get("recommended_id"):
-                flight["aiRecommended"] = True
-                flight["aiReasoning"] = parsed.get("reason", {})
-                flight["popular"] = True
+            for flight in flights:
+                if flight["id"] == parsed.get("recommended_id"):
+                    flight["aiRecommended"] = True
+                    flight["aiReasoning"] = parsed.get("reason", {})
+                    flight["popular"] = True
+                else:
+                    flight["aiReasoning"] = flight.get("aiReasoning", {})
+        else:
+            print("⚠️ No valid JSON found in Gemini reply.")
 
     except json.JSONDecodeError as je:
         print("⚠️ JSON Decode Error from Gemini:", je)
