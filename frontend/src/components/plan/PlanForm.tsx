@@ -10,7 +10,11 @@ import TravelersSection from './TravelersSection';
 import InterestsSection from './InterestsSection';
 import DietarySection from './DietarySection';
 
-const PlanForm = () => {
+interface PlanFormProps {
+  setLoading: (loading: boolean) => void;
+}
+
+const PlanForm: React.FC<PlanFormProps> = ({ setLoading }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     from: '',
@@ -27,6 +31,7 @@ const PlanForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const response = await fetch('http://127.0.0.1:8000/api/generate-plan', {
         method: 'POST',
         headers: {
@@ -46,14 +51,13 @@ const PlanForm = () => {
       });
 
       const data = await response.json();
-
-      // Save to localStorage for access on other pages
       localStorage.setItem('planResults', JSON.stringify(data));
-
-      // Redirect to Flights page
+      localStorage.setItem('formData', JSON.stringify(formData));
       navigate('/flights');
     } catch (error) {
       console.error('Error generating plan:', error);
+    } finally {
+      setLoading(false);
     }
   };
 

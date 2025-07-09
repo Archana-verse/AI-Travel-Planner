@@ -2,27 +2,25 @@ import React from 'react';
 import { CheckCircle } from 'lucide-react';
 
 interface HotelActionsProps {
-  price: number;
+  price: string; 
   hotelId: string;
   onSelect: (hotelId: string) => void;
   onBook: (hotelId: string) => void;
 }
 
-const HotelActions = ({ price, hotelId, onSelect, onBook }: HotelActionsProps) => {
+const HotelActions = ({ price, hotelId, onSelect }: HotelActionsProps) => {
   return (
-    <div className="text-right mt-6 lg:mt-0 lg:ml-8">
-      <div className="text-3xl font-semibold text-primary mb-1">₹{price.toLocaleString()}</div>
-      <div className="text-muted-foreground mb-6">per night</div>
-      <div className="space-y-3">
-        <button
-          onClick={() => onSelect(hotelId)}
-          className="btn-primary w-full flex-center"
-        >
-          <CheckCircle size={18} />
-          <span>Select Hotel</span>
-        </button>
-        {/* Book Hotel button removed */}
-      </div>
+    <div className="text-right mt-5 md:mt-0 md:ml-8">
+      <div className="text-xl font-semibold text-primary mb-1">{price}</div>
+      <div className="text-sm text-muted-foreground mb-4">Includes basic amenities</div>
+
+      <button
+        onClick={() => onSelect(hotelId)}
+        className="btn-primary w-full flex items-center justify-center gap-2"
+      >
+        <CheckCircle size={18} />
+        <span>Select Hotel</span>
+      </button>
     </div>
   );
 };

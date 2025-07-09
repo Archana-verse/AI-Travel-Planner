@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Plane } from 'lucide-react';
 import { FormData } from '../../types/plan';

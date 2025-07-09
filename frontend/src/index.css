@@ -4,9 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Google Fonts - Inter for clean, human-like typography */
-
-/* Enhanced design system with Indian-inspired color palette */
 @layer base {
   :root {
     /* Sandstone background with warm undertones */

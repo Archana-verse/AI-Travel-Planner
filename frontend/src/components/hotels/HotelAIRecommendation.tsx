@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Zap } from 'lucide-react';
 
@@ -17,16 +16,17 @@ const HotelAIRecommendation = ({ aiReasoning }: HotelAIRecommendationProps) => {
   if (!aiReasoning) return null;
 
   return (
-    <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-xl p-4 border border-primary/20">
-      <div className="flex-center mb-3">
-        <Zap className="text-primary" size={16} />
-        <h4 className="font-medium text-foreground ml-2">Why AI recommends this:</h4>
+    <div className="bg-muted/40 dark:bg-muted/30 border border-primary/20 rounded-lg p-3 mt-4">
+      <div className="flex items-center mb-2">
+        <Zap size={16} className="text-primary mr-2" />
+        <span className="text-sm font-medium text-foreground">AI-picked highlights:</span>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-foreground">
-        <div><strong>Rating:</strong> {aiReasoning.rating}</div>
-        <div><strong>Location:</strong> {aiReasoning.location}</div>
-        <div><strong>Amenities:</strong> {aiReasoning.amenities}</div>
-        <div><strong>Value:</strong> {aiReasoning.value}</div>
+
+      <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+        <span className="bg-muted px-2 py-1 rounded-full">{aiReasoning.rating}</span>
+        <span className="bg-muted px-2 py-1 rounded-full">{aiReasoning.location}</span>
+        <span className="bg-muted px-2 py-1 rounded-full">{aiReasoning.amenities}</span>
+        <span className="bg-muted px-2 py-1 rounded-full">{aiReasoning.value}</span>
       </div>
     </div>
   );

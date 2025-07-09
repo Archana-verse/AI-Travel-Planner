@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FormData } from '../../types/plan';
 import { travelerOptions } from '../../data/planOptions';

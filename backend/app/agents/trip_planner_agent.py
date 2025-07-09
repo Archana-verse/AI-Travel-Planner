@@ -1,79 +1,47 @@
-# from app.services.serpapi_service import search_flights
-# from app.services.gemini_service import get_ai_flight_recommendation
-# from app.utils.iata_lookup import get_iata_code
-
-# def generate_full_plan(plan):
-#     # 🔁 Convert city names to IATA airport codes
-#     origin_code = get_iata_code(plan.from_)
-#     destination_code = get_iata_code(plan.to)
-
-#     # ✈️ Get real-time flights from SerpAPI
-#     flights = search_flights(origin_code, destination_code, plan.departure_date)
-
-#     # 🤖 Get AI recommendation using Gemini
-#     ai_response = get_ai_flight_recommendation(flights)
-
-#     recommended_id = ai_response.get("recommended_id")
-#     reasoning = ai_response.get("reason", {})
-
-#     # 🧠 Mark the recommended flight and add reasoning
-#     for flight in flights:
-#         if flight["id"] == recommended_id:
-#             flight["aiRecommended"] = True
-#             flight["ai_reasoning"] = reasoning
-#         else:
-#             flight["ai_reasoning"] = flight.get("ai_reasoning", {})
-
-#     return {
-#         "flights": flights,
-#         "hotels": [],      # Will be filled by hotel_agent later
-#         "itinerary": []    # Will be filled by itinerary_agent later
-#     }
-
-
-from app.services.serpapi_service import search_flights, search_hotels
-from app.services.gemini_service import get_ai_flight_recommendation, get_ai_hotel_recommendation
-from app.utils.iata_lookup import get_iata_code
+from app.agents.flight_agent import get_flight_recommendations
+from app.agents.hotel_agent import get_hotel_recommendations
+from app.agents.itinerary_agent import generate_daywise_itinerary
+from app.utils.iata_lookup import get_iata_code  
 
 def generate_full_plan(plan):
-    # 🔁 Convert city names to IATA airport codes
-    origin_code = get_iata_code(plan.from_)
-    destination_code = get_iata_code(plan.to)
+    """
+    Orchestrates the full travel planning process:
+    - Fetches flight options (city name → IATA)
+    - Recommends hotels (city name directly)
+    - Generates daywise itinerary
+    """
+    preferences = plan.dict()
 
-    # ✈️ Get real-time flights from SerpAPI
-    flights = search_flights(origin_code, destination_code, plan.departure_date)
+    # ✅ Convert city names to IATA codes for flights only
+    from_iata = get_iata_code(preferences["from_"])
+    to_iata = get_iata_code(preferences["to"])
 
-    # 🤖 Get AI recommendation using Gemini for flights
-    ai_response = get_ai_flight_recommendation(flights)
-    recommended_id = ai_response.get("recommended_id")
-    reasoning = ai_response.get("reason", {})
+    # ✈️ Flight Recommendations
+    flights = get_flight_recommendations(
+        from_city=from_iata,
+        to_city=to_iata,
+        departure_date=preferences["departureDate"],
+        preferences=preferences
+    )
 
-    for flight in flights:
-        if flight["id"] == recommended_id:
-            flight["aiRecommended"] = True
-            flight["ai_reasoning"] = reasoning
-        else:
-            flight["ai_reasoning"] = flight.get("ai_reasoning", {})
+    # 🏨 Hotel Recommendations (use city name as-is)
+    hotels = get_hotel_recommendations(
+        city=preferences["to"],
+        checkin_date=preferences["departureDate"],
+        checkout_date=preferences["returnDate"],
+        preferences=preferences
+    )
 
-    # 🏨 Get real-time hotels in destination city
-    hotels_raw = search_hotels(plan.to, plan.departure_date, plan.return_date or plan.departure_date)
-
-    # 🧠 Use Gemini to recommend a hotel
-    hotel_ai = get_ai_hotel_recommendation(hotels_raw)
-    hotel_recommended_id = hotel_ai.get("recommended_id")
-    hotel_reasoning = hotel_ai.get("reason", {})
-
-    for hotel in hotels_raw:
-        if hotel["id"] == hotel_recommended_id:
-            hotel["aiRecommended"] = True
-            hotel["ai_reasoning"] = hotel_reasoning
-        else:
-            hotel["ai_reasoning"] = hotel.get("ai_reasoning", {})
+    # 📅 Itinerary Generation (use city name as-is)
+    itinerary = generate_daywise_itinerary(
+        city=preferences["to"],
+        from_date=preferences["departureDate"],
+        to_date=preferences["returnDate"],
+        preferences=preferences
+    )
 
     return {
         "flights": flights,
-        "hotels": hotels_raw,
-        "itinerary": []  # Will be filled by itinerary_agent later
+        "hotels": hotels,
+        "itinerary": itinerary
     }
-
-

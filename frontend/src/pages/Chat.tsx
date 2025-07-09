@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MessageCircle, Send, Bot, User, Sparkles } from 'lucide-react';
 
@@ -7,13 +6,14 @@ const Chat = () => {
     {
       id: 1,
       type: 'bot',
-      content: 'Namaste! I\'m your AI travel assistant. How can I help you plan your perfect journey today?',
+      content: "Namaste!🙏 I'm your AI travel assistant. How may I assist you in planning your perfect journey today?",
       timestamp: new Date()
     }
   ]);
+
   const [inputMessage, setInputMessage] = useState('');
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
@@ -25,19 +25,45 @@ const Chat = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const botResponse = {
-        id: messages.length + 2,
-        type: 'bot' as const,
-        content: 'I understand you need travel assistance. Let me help you with that! Based on your requirements, I can suggest some amazing destinations and create a personalized itinerary for you.',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botResponse]);
-    }, 1000);
-
     setInputMessage('');
+
+    // Show "typing..." placeholder
+    const loadingMessage = {
+      id: messages.length + 2,
+      type: 'bot' as const,
+      content: '✍ Thinking...',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, loadingMessage]);
+
+    try {
+      const res = await fetch('http://localhost:8000/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: inputMessage }),
+      });
+
+      const data = await res.json();
+
+      setMessages(prev =>
+        prev.slice(0, -1).concat({
+          id: messages.length + 2,
+          type: 'bot' as const,
+          content: data.response || '🤖 I couldn’t find an answer. Please try again!',
+          timestamp: new Date()
+        })
+      );
+    } catch (err) {
+      console.error('❌ Chat API Error:', err);
+      setMessages(prev =>
+        prev.slice(0, -1).concat({
+          id: messages.length + 2,
+          type: 'bot' as const,
+          content: '⚠ Something went wrong. Please try again later.',
+          timestamp: new Date()
+        })
+      );
+    }
   };
 
   const quickQuestions = [
@@ -70,13 +96,9 @@ const Chat = () => {
                 key={message.id}
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} animate-scale-in`}
               >
-                <div className={`flex items-start space-x-3 max-w-xs lg:max-w-md ${
-                  message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''
-                }`}>
+                <div className={`flex items-start space-x-3 max-w-xs lg:max-w-md ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
                   <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-md ${
-                    message.type === 'bot'
-                      ? 'gradient-saffron text-white'
-                      : 'bg-muted text-muted-foreground'
+                    message.type === 'bot' ? 'gradient-saffron text-white' : 'bg-muted text-muted-foreground'
                   }`}>
                     {message.type === 'bot' ? <Bot size={18} /> : <User size={18} />}
                   </div>
@@ -89,10 +111,7 @@ const Chat = () => {
                     <p className={`text-xs mt-2 ${
                       message.type === 'bot' ? 'text-muted-foreground' : 'text-white/70'
                     }`}>
-                      {message.timestamp.toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                 </div>
@@ -110,10 +129,7 @@ const Chat = () => {
                 placeholder="Ask me about destinations, planning, or anything travel-related..."
                 className="flex-1 px-4 py-3 border border-input rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-background text-foreground placeholder:text-muted-foreground"
               />
-              <button
-                type="submit"
-                className="btn-primary flex-center"
-              >
+              <button type="submit" className="btn-primary flex-center">
                 <Send size={18} />
                 <span>Send</span>
               </button>
@@ -121,7 +137,7 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Questions */}
         <div className="animate-fade-in">
           <div className="flex-center mb-6">
             <Sparkles className="text-primary mr-2" size={20} />
@@ -131,7 +147,15 @@ const Chat = () => {
             {quickQuestions.map((question, index) => (
               <button
                 key={index}
-                onClick={() => setInputMessage(question)}
+                onClick={() => {
+                  setInputMessage(question);
+                  setTimeout(() => {
+                    const form = document.querySelector('form');
+                    if (form) {
+                      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                    }
+                  }, 100);
+                }}
                 className="card-interactive p-4 text-left hover-lift"
               >
                 <p className="text-body">{question}</p>

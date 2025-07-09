@@ -1,17 +1,17 @@
 
 :root {
-    --primary-color: #FF5722; /* Deep Orange */
-    --secondary-color: #4CAF50; /* Green */
-    --accent-color: #FFC107; /* Amber */
-    --background-color: #F5F5F5; /* Light Grey */
-    --surface-color: #FFFFFF; /* White */
-    --error-color: #F44336; /* Red */
-    --text-primary: #212121; /* Dark Grey */
-    --text-secondary: #757575; /* Medium Grey */
-    --text-disabled: #BDBDBD; /* Light Grey */
+    --primary-color: #FF5722; 
+    --secondary-color: #4CAF50; 
+    --accent-color: #FFC107; 
+    --background-color: #F5F5F5; 
+    --surface-color: #FFFFFF; 
+    --error-color: #F44336; 
+    --text-primary: #212121; 
+    --text-secondary: #757575; 
+    --text-disabled: #BDBDBD; 
 }
 
-/* Typography */
+
 body {
     font-family: 'Inter', sans-serif;
     font-weight: 400;

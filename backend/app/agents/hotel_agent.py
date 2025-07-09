@@ -1,29 +1,62 @@
 from app.services.serpapi_service import search_hotels
-from app.services.gemini_service import get_ai_hotel_recommendation
+from app.services.gemini_service import generate_gemini_response
+import json
+import re
 
-class HotelAgent:
-    def __init__(self, plan_data):
-        self.plan = plan_data
+def get_hotel_recommendations(city, checkin_date, checkout_date, preferences):
+    """
+    Uses SerpAPI to fetch hotel listings and Gemini to select the best one
+    based on user preferences (interests, budget, travelers, diet).
+    """
+    hotels = search_hotels(city, checkin_date, checkout_date)
+    if not hotels:
+        print("⚠️ No hotels returned from SerpAPI.")
+        return []
 
-    def run(self):
-        destination = self.plan["to"]
-        check_in = self.plan["departure_date"]
-        check_out = self.plan["return_date"]
+    # 🧠 Prepare prompt for Gemini
+    prompt = f"""
+You are an AI travel expert helping users choose the best hotel in {city} from {checkin_date} to {checkout_date}.
+User preferences:
+- Interests: {preferences.get("interests")}
+- Budget: {preferences.get("budget")}
+- Travelers: {preferences.get("travelers")}
+- Diet: {preferences.get("diet")}
 
-        hotels = search_hotels(destination, check_in, check_out)
+Hotels available (in JSON):
+{json.dumps(hotels[:5], indent=2)}
 
-        if not hotels:
-            return []
+Pick one hotel and explain why.
+Reply ONLY in JSON like this:
+{{
+  "recommended_id": "<hotel_id>",
+  "reason": {{
+    "rating": "...",
+    "location": "...",
+    "amenities": "...",
+    "value": "..."
+  }}
+}}
+"""
 
-        ai_response = get_ai_hotel_recommendation(hotels)
-        recommended_id = ai_response.get("recommended_id")
-        reasoning = ai_response.get("reason", {})
+    try:
+        gemini_reply = generate_gemini_response(prompt)
+        print("\n🏨 Gemini Hotel Raw Response:\n", gemini_reply)
 
-        for hotel in hotels:
-            if hotel["id"] == recommended_id:
-                hotel["aiRecommended"] = True
-                hotel["ai_reasoning"] = reasoning
-            else:
-                hotel["ai_reasoning"] = hotel.get("ai_reasoning", {})
+        # Extract valid JSON from Gemini reply
+        match = re.search(r'\{.*\}', gemini_reply, re.DOTALL)
+        if match:
+            parsed = json.loads(match.group())
 
-        return hotels
+            for hotel in hotels:
+                if hotel["id"] == parsed.get("recommended_id"):
+                    hotel["aiRecommended"] = True
+                    hotel["ai_reasoning"] = parsed.get("reason", {})
+                else:
+                    hotel["ai_reasoning"] = hotel.get("ai_reasoning", {})
+        else:
+            print("⚠️ No valid JSON found in Gemini hotel reply.")
+
+    except Exception as e:
+        print("⚠️ Error in hotel recommendation:", e)
+
+    return hotels

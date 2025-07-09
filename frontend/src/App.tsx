@@ -12,6 +12,7 @@ import Hotels from "./pages/Hotels";
 import Itinerary from "./pages/Itinerary";
 import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
+import LoaderPage from "@/pages/LoaderPage";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
         <div className="min-h-screen bg-background">
           <Navbar />
           <Routes>
+            <Route path="/loading" element={<LoaderPage />} />
             <Route path="/" element={<Home />} />
             <Route path="/plan" element={<Plan />} />
             <Route path="/flights" element={<Flights />} />
