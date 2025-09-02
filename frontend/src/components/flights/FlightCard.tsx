@@ -44,11 +44,11 @@ const FlightCard = ({
 
   return (
     <div
-      className={`card-elevated overflow-hidden hover-lift ${
+      className={`card-elevated overflow-hidden hover-lift transition-all duration-300 ${
         isSelected ? 'selection-ring' : ''
       } ${
         flight.aiRecommended
-          ? 'bg-gradient-to-r from-[#fff7eb] dark:from-[#2a1f0f] to-white dark:to-card border-l-4 border-primary'
+          ? 'bg-gradient-to-r from-[#fff7eb] dark:from-[#2a1f0f] to-white dark:to-card border-l-4 border-primary animate-glow-border'
           : ''
       }`}
       style={{ animationDelay: `${index * 0.1}s` }}
@@ -96,7 +96,7 @@ const FlightCard = ({
             )}
           </div>
 
-          {/* 💡 Actions (Merged from missing FlightActions.tsx) */}
+          {/* Actions */}
           <div className="text-right min-w-[130px]">
             <div className="text-xl font-bold text-foreground mb-1">₹{flight.price}</div>
             <div className="text-sm text-muted-foreground mb-4">per person</div>

@@ -9,6 +9,7 @@ import BudgetSection from './BudgetSection';
 import TravelersSection from './TravelersSection';
 import InterestsSection from './InterestsSection';
 import DietarySection from './DietarySection';
+import HotelAffordabilitySlider from './HotelAffordabilitySlider'; 
 
 interface PlanFormProps {
   setLoading: (loading: boolean) => void;
@@ -23,6 +24,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ setLoading }) => {
     returnDate: '',
     travelClass: 'economy',
     budget: '',
+    hotelAffordability: 'medium', 
     travelers: 'solo',
     interests: [],
     diet: ''
@@ -44,6 +46,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ setLoading }) => {
           returnDate: formData.returnDate,
           travelClass: formData.travelClass,
           budget: formData.budget,
+          hotelAffordability: formData.hotelAffordability, 
           travelers: formData.travelers,
           interests: formData.interests,
           diet: formData.diet
@@ -67,6 +70,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ setLoading }) => {
       <DateSection formData={formData} setFormData={setFormData} />
       <TravelClassSection formData={formData} setFormData={setFormData} />
       <BudgetSection formData={formData} setFormData={setFormData} />
+      <HotelAffordabilitySlider formData={formData} setFormData={setFormData} /> 
       <TravelersSection formData={formData} setFormData={setFormData} />
       <InterestsSection formData={formData} setFormData={setFormData} />
       <DietarySection formData={formData} setFormData={setFormData} />

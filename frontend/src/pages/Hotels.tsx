@@ -8,7 +8,6 @@ import { Wifi, Waves, Car, Utensils, Building as BizIcon } from 'lucide-react';
 const Hotels = () => {
   const navigate = useNavigate();
   const [hotels, setHotels] = useState<any[]>([]);
-  const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const checkIn = "2025-07-10";
@@ -120,9 +119,10 @@ const Hotels = () => {
     return Building;
   };
 
-  const visibleHotels = showAll
-    ? hotels
-    : hotels.filter(h => h.aiRecommended).slice(0, 3);
+  const topAIHotels = hotels.filter(h => h.aiRecommended).slice(0, 3);
+  const remainingHotels = hotels.filter(h => !topAIHotels.includes(h));
+  const visibleHotels = [...topAIHotels, ...remainingHotels];
+
 
   return (
     <div className="min-h-screen bg-pattern gradient-warm py-12 px-6">
@@ -156,22 +156,9 @@ const Hotels = () => {
             ))
           )}
         </div>
-
-        {/* Show All Button */}
-        {!showAll && !loading && hotels.length > 3 && (
-          <div className="mt-10 flex justify-center animate-fade-in">
-            <button
-              onClick={() => setShowAll(true)}
-              className="px-5 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-full shadow-md transition"
-            >
-              View All Hotels
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
 export default Hotels;
-

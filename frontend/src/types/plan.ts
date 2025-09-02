@@ -9,5 +9,6 @@ export interface FormData {
   travelers: string;
   interests: string[];
   diet: string;
+  hotelAffordability: 'low' | 'medium' | 'high';
 }
 

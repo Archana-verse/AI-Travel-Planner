@@ -99,7 +99,7 @@ def get_fallback_price(total_budget, num_days, tier="mid"):
     return f"₹{int(random.uniform(min_price, max_price))}"
 
 
-def search_hotels(city, checkin_date, checkout_date, budget=None, travelers=None):
+def search_hotels(city, checkin_date, checkout_date, budget=None, travelers=None, hotel_affordability="medium"):
     try:
         print("🏨 Searching hotels using SerpAPI...")
 
@@ -108,8 +108,8 @@ def search_hotels(city, checkin_date, checkout_date, budget=None, travelers=None
         num_days = (date2 - date1).days or 1
         total_budget = int(budget or 30000)
 
-        # Determine pricing tier
         tier = "budget" if total_budget < 25000 else "luxury" if total_budget > 60000 else "mid"
+        affordability = hotel_affordability or "medium"
 
         params = {
             "engine": "google_hotels",
@@ -143,9 +143,7 @@ def search_hotels(city, checkin_date, checkout_date, budget=None, travelers=None
         parsed_hotels = []
         for i, h in enumerate(hotels):
             name = h.get("name", f"Hotel {i+1}")
-            price = h.get("price", {}).get("lead", {}).get("formatted") \
-                    or h.get("price") \
-                    or get_fallback_price(total_budget, num_days, tier)
+            serp_price = h.get("price", {}).get("lead", {}).get("formatted") or h.get("price")
             rating = h.get("rating", round(random.uniform(3.2, 4.8), 1))
             reviews = h.get("reviews", f"{random.randint(80, 400)}+ reviews")
             location = h.get("address") or h.get("location") or f"{city}, India"
@@ -153,10 +151,37 @@ def search_hotels(city, checkin_date, checkout_date, budget=None, travelers=None
             link = h.get("link") or h.get("booking_link") or "https://www.google.com/travel/hotels"
             amenities = h.get("amenities", ["Free WiFi", "Breakfast Included"])
 
+            if serp_price:
+                price = serp_price
+                price_fallback = False
+            else:
+                name_lower = name.lower()
+                if any(word in name_lower for word in ["oyo", "lodge", "hostel", "dorm"]):
+                    min_p, max_p = 500, 1400
+                elif any(word in name_lower for word in ["resort", "marriott", "hilton", "luxury", "premium"]):
+                    min_p, max_p = 4000, 8000
+                elif rating >= 4.3:
+                    min_p, max_p = 3500, 6000
+                elif rating >= 3.8:
+                    min_p, max_p = 2200, 4000
+                else:
+                    min_p, max_p = 1500, 2500
+
+                if affordability == "low":
+                    max_p = int(max_p * 0.7)
+                    min_p = int(min_p * 0.7)
+                elif affordability == "high":
+                    max_p = int(max_p * 1.3)
+                    min_p = int(min_p * 1.1)
+
+                price = f"₹{random.randint(min_p, max_p)}"
+                price_fallback = True
+
             hotel = {
                 "id": f"hotel{i}",
                 "name": name,
                 "price": price,
+                "priceFallback": price_fallback,
                 "rating": rating,
                 "reviews": reviews,
                 "location": location,
@@ -174,6 +199,7 @@ def search_hotels(city, checkin_date, checkout_date, budget=None, travelers=None
                     "id": f"fallback_hotel{i}",
                     "name": f"Fallback Hotel {i+1}",
                     "price": get_fallback_price(total_budget, num_days, tier),
+                    "priceFallback": True,
                     "rating": round(random.uniform(3.3, 4.6), 1),
                     "reviews": f"{random.randint(100, 500)}+ reviews",
                     "location": f"{city}, India",
@@ -191,4 +217,3 @@ def search_hotels(city, checkin_date, checkout_date, budget=None, travelers=None
     except Exception as e:
         print(" Unexpected Error While Fetching Hotels:", e)
         return []
-

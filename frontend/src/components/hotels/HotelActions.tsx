@@ -10,17 +10,19 @@ interface HotelActionsProps {
 
 const HotelActions = ({ price, hotelId, onSelect }: HotelActionsProps) => {
   return (
-    <div className="text-right mt-5 md:mt-0 md:ml-8">
-      <div className="text-xl font-semibold text-primary mb-1">{price}</div>
-      <div className="text-sm text-muted-foreground mb-4">Includes basic amenities</div>
-
+    <div className="flex items-center justify-between flex-wrap gap-4 mt-5">
       <button
         onClick={() => onSelect(hotelId)}
-        className="btn-primary w-full flex items-center justify-center gap-2"
+        className="btn-primary flex items-center gap-2 px-4 py-2"
       >
         <CheckCircle size={18} />
         <span>Select Hotel</span>
       </button>
+
+      <div className="text-right">
+        <div className="text-xl font-semibold text-primary">{price}</div>
+        <div className="text-sm text-muted-foreground">Includes basic amenities</div>
+      </div>
     </div>
   );
 };

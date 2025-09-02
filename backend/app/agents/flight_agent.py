@@ -9,7 +9,7 @@ def get_flight_recommendations(from_city, to_city, departure_date, preferences):
     if not flights:
         return []
 
-    # Sort by price and mark the cheapest
+    
     def clean_price(price_str):
         return int(str(price_str).replace("₹", "").replace(",", "").strip())
 
@@ -40,7 +40,7 @@ Respond ONLY in this strict JSON format:
         gemini_reply = generate_gemini_response(prompt)
         print("\n🧠 Gemini Raw Response:\n", gemini_reply)
 
-        # Safely extract JSON
+        
         match = re.search(r'\{.*\}', gemini_reply, re.DOTALL)
         if match:
             parsed = json.loads(match.group())

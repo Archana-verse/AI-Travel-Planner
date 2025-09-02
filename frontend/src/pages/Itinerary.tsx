@@ -4,6 +4,7 @@ import {
   CheckCircle, IndianRupee
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import html2pdf from 'html2pdf.js'; 
 
 const Itinerary = () => {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ const Itinerary = () => {
     'Akasa Air': 'https://www.akasaair.com/',
     'Alliance Air': 'https://www.allianceair.in/',
     'AirAsia India': 'https://www.airasia.co.in/',
-    'Star Air':      'https://www.starair.in/',
+    'Star Air': 'https://www.starair.in/',
     'Air India Express': 'https://www.airindiaexpress.com/',
   };
 
@@ -91,11 +92,21 @@ const Itinerary = () => {
     }
   };
 
-  const checkIn = hotel?.checkIn;
-  const checkOut = hotel?.checkOut;
+  // ✅ NEW: fallback to formData if hotel check-in/out missing
+  const formDataRaw = localStorage.getItem('formData');
+  let fallbackCheckIn = '';
+  let fallbackCheckOut = '';
+
+  if (formDataRaw) {
+    const formData = JSON.parse(formDataRaw);
+    fallbackCheckIn = formData.departureDate;
+    fallbackCheckOut = formData.returnDate;
+  }
+
+  const checkIn = hotel?.checkIn || fallbackCheckIn;
+  const checkOut = hotel?.checkOut || fallbackCheckOut;
 
   const getNights = () => {
-    if (!checkIn || !checkOut) return 1;
     const inDate = new Date(checkIn);
     const outDate = new Date(checkOut);
     const diffTime = outDate.getTime() - inDate.getTime();
@@ -151,8 +162,8 @@ const Itinerary = () => {
               <div className="text-sm space-y-1">
                 <div className="font-semibold">{hotel.name}</div>
                 <div className="text-gray-500 dark:text-gray-300">{hotel.address}</div>
-                <div className="flex justify-between"><span>Check-in:</span><span>{hotel.checkIn}</span></div>
-                <div className="flex justify-between"><span>Check-out:</span><span>{hotel.checkOut}</span></div>
+                <div className="flex justify-between"><span>Check-in:</span><span>{checkIn}</span></div>
+                <div className="flex justify-between"><span>Check-out:</span><span>{checkOut}</span></div>
                 <div className="flex justify-between font-semibold text-orange-600">
                   <span>Total Price ({nights} night{nights > 1 ? 's' : ''}):</span>
                   <span>₹{hotelTotal.toLocaleString()}</span>
@@ -165,9 +176,30 @@ const Itinerary = () => {
 
         {/* Buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <button className="btn-primary flex items-center gap-2"><Download size={18} />Download PDF</button>
-          <button className="btn-secondary flex items-center gap-2" onClick={() => navigate('/plan')}><RefreshCw size={18} />Regenerate</button>
-          <button className="flex items-center gap-2 border px-4 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-700"><Copy size={18} />Copy to Clipboard</button>
+          <button
+            className="btn-primary flex items-center gap-2"
+            onClick={() => {
+              const element = document.querySelector('.max-w-5xl');
+              if (!element) return;
+              html2pdf().set({
+                margin: 0.5,
+                filename: 'itinerary.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+              }).from(element).save();
+            }}
+          >
+            <Download size={18} />Download PDF
+          </button>
+
+          <button className="btn-secondary flex items-center gap-2" onClick={() => navigate('/plan')}>
+            <RefreshCw size={18} />Regenerate
+          </button>
+
+          <button className="flex items-center gap-2 border px-4 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-700">
+            <Copy size={18} />Copy to Clipboard
+          </button>
         </div>
 
         {/* Day-wise Itinerary */}
@@ -178,7 +210,9 @@ const Itinerary = () => {
                 <div className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">{day.day}</div>
                 <div className="ml-4">
                   <h3 className="font-semibold text-lg">Day {day.day}: {day.title}</h3>
-                  <div className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1"><Calendar size={14} /> {day.date}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-300 flex items-center gap-1">
+                    <Calendar size={14} /> {day.date}
+                  </div>
                 </div>
               </div>
               <div className="space-y-4">
@@ -206,7 +240,9 @@ const Itinerary = () => {
             </div>
             <div className="text-3xl font-bold text-orange-600">₹{totalCost.toLocaleString()}</div>
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">*Includes flights, accommodation, and estimated meal costs. Actual costs may vary.</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+            *Includes flights, accommodation, and estimated meal costs. Actual costs may vary.
+          </p>
         </div>
       </div>
     </div>
