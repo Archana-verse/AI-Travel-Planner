@@ -17,15 +17,18 @@
 
 ---
 
-## Architecture Overview
+## 📸 Project Preview
+- <img width="1272" height="900" alt="Screenshot 2025-09-18 124811" src="https://github.com/user-attachments/assets/99653e7f-cfbd-4b38-8eb1-a29e4f36059e" />
 
-### 1. High-Level System Architecture
-![Overall Architecture](./assets/architecture-overview.jpg)
+- <img width="1718" height="960" alt="Screenshot 2025-09-18 124313" src="https://github.com/user-attachments/assets/64b196ca-0562-45d4-90cb-3316e9d28bf2" />
 
-### 2. How Raahi Works
-![How Raahi Works](./assets/raahi-flow.jpg)
+- <img width="1211" height="893" alt="Screenshot 2025-09-18 124350" src="https://github.com/user-attachments/assets/e3def7b3-cbb7-4436-a29e-6124b9fd3361" />
 
+- <img width="1165" height="908" alt="Screenshot 2025-09-18 124459" src="https://github.com/user-attachments/assets/5c69a9c3-d66a-48dd-8d91-1fbf9b8af2fd" />
 
+- <img width="1159" height="913" alt="Screenshot 2025-09-18 124552" src="https://github.com/user-attachments/assets/bbcda92e-95c1-4a12-b42b-d3255ef5c711" />
+
+-  <img width="1172" height="861" alt="Screenshot 2025-09-18 124744" src="https://github.com/user-attachments/assets/a60b0e21-a384-463d-b3ad-75bcd958d4fe" />
 
 ---
 
